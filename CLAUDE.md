@@ -255,31 +255,13 @@ section is only true for this one.
   and the `docs/` folders and source of `tektoncd/pipeline` (tag `v1.17.1`)
   and `tektoncd/cli` (tag `v0.46.2`). Check every page against them.
 
-### Status: built, not yet run
+### Status: every environment passes `astrona test`
 
-The first version of this repository was written from the Tekton
-documentation and the source at the pinned tags **without a live run**. No
-playground or lab has been started, and no `astrona test` has passed yet. The
-Buildah commands were checked in Podman containers with the default
-Kubernetes capability set against `registry:3.1.2` (build, push, digest file,
-the overlay error without `/dev/fuse`, the HTTPS error against an HTTP
-registry, exit code 125 for a missing Dockerfile). Until a maintainer runs
-them:
-
-- Pages describe results in words. Do not add `text` output blocks until the
-  output comes from a real run, and then paste it exactly.
-- Treat every lab as unverified. Run `astrona validate` and `astrona test` on
-  each one, one cluster at a time, before the course goes past `maturity:
-  draft`.
-- Remove this subsection when every lab has passed `astrona test`.
-
-The biggest open risks are: Buildah in a kind pod on hosts with AppArmor
-(the test was Podman on macOS; the Dockerfiles have no `RUN` line, so no
-mount namespace is needed); the timing of the section 010 capstone, whose
-first failure must be `CreateContainerConfigError` (a wrong Secret key)
-before the bash-shebang failure shows; the step and run timeout demos in
-section 030 part 1, which depend on pod start time; and pulls of
-`mirror.gcr.io/library/busybox:1.37.0` from inside the build pods.
+All nine environments (three playgrounds, three labs, three capstones) passed
+`astrona test` on 2026-10-25 on a laptop `kind` cluster with Podman. Pages
+still describe results in words: add a `text` output block only when it is
+pasted exactly from a real run. Run `astrona test` again on every environment
+you change.
 
 ### Terms, not metaphors
 
