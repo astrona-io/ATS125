@@ -1,0 +1,64 @@
+# The data the Task deck-report works on:
+# - the PersistentVolumeClaim report-data; the seed pod writes
+#   reports/history.txt with two earlier report lines;
+# - the PersistentVolumeClaim report-cache (empty; nothing in it needs to
+#   persist);
+# - the ConfigMap report-config with the key deck.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: report-data
+  namespace: starfleet
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: report-cache
+  namespace: starfleet
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: report-config
+  namespace: starfleet
+data:
+  deck: engineering
+---
+# Writes the two earlier report lines into report-data, then exits.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: seed-report-data
+  namespace: starfleet
+spec:
+  restartPolicy: Never
+  containers:
+    - name: seed
+      image: busybox:1.37.0
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          mkdir -p /data/reports
+          printf '2026-10-01 bridge: ok\n2026-10-08 scout: ok\n' > /data/reports/history.txt
+          ls -lR /data
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: report-data

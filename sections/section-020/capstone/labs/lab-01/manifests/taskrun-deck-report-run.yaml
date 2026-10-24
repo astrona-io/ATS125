@@ -1,0 +1,26 @@
+# The TaskRun the capstone starts with. It has two faults:
+# - it binds two different PersistentVolumeClaims (report-data and
+#   report-cache), which Tekton refuses for one TaskRun by default;
+# - output uses the subPath "report", but the history lives in "reports".
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: deck-report-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: deck-report
+  params:
+    - name: run-date
+      value: "2026-10-15"
+  workspaces:
+    - name: output
+      persistentVolumeClaim:
+        claimName: report-data
+      subPath: report
+    - name: config
+      configMap:
+        name: report-config
+    - name: cache
+      persistentVolumeClaim:
+        claimName: report-cache

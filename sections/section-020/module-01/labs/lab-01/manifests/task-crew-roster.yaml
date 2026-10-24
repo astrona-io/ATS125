@@ -1,0 +1,52 @@
+# The Task the learner runs. It is correct; the task is to write a TaskRun
+# that binds its three workspaces.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: crew-roster
+  namespace: starfleet
+spec:
+  description: Builds a roster file from crew.txt and signs it when a token is given.
+  workspaces:
+    - name: source
+      description: Holds crew.txt. The Task writes roster.txt and roster.sig next to it.
+    - name: settings
+      description: Settings from a ConfigMap. The key deck names the deck.
+      readOnly: true
+      mountPath: /etc/roster
+    - name: token
+      description: Optional signing token from a Secret, with the key token.
+      optional: true
+  results:
+    - name: roster
+      description: The deck and the number of crew members
+    - name: signed
+      description: true when the roster was signed with the token, false otherwise
+  steps:
+    - name: build-roster
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        deck="$(cat "$(workspaces.settings.path)/deck")"
+        count="$(grep -c . "$(workspaces.source.path)/crew.txt")"
+        {
+          echo "deck: $deck"
+          cat "$(workspaces.source.path)/crew.txt"
+        } > "$(workspaces.source.path)/roster.txt"
+        printf '%s: %s crew members' "$deck" "$count" | tee "$(results.roster.path)"
+    - name: sign
+      image: busybox:1.37.0
+      workspaces:
+        - name: token
+      script: |
+        #!/bin/sh
+        set -eu
+        if [ "$(workspaces.token.bound)" = "true" ]; then
+          cat "$(workspaces.source.path)/roster.txt" "$(workspaces.token.path)/token" \
+            | sha256sum | cut -d' ' -f1 > "$(workspaces.source.path)/roster.sig"
+          printf 'true' > "$(results.signed.path)"
+        else
+          rm -f "$(workspaces.source.path)/roster.sig"
+          printf 'false' > "$(results.signed.path)"
+        fi

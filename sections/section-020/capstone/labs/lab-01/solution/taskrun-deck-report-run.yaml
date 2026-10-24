@@ -1,0 +1,23 @@
+# Reference end state of the TaskRun: one PersistentVolumeClaim (report-data,
+# subPath reports) and an emptyDir for the cache.
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: deck-report-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: deck-report
+  params:
+    - name: run-date
+      value: "2026-10-15"
+  workspaces:
+    - name: output
+      persistentVolumeClaim:
+        claimName: report-data
+      subPath: reports
+    - name: config
+      configMap:
+        name: report-config
+    - name: cache
+      emptyDir: {}

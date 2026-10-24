@@ -1,0 +1,61 @@
+# The source code the build Task works on:
+# - the ConfigMap bridge-app-files holds a small Dockerfile and message.txt;
+# - the PersistentVolumeClaim bridge-source gets them in the folder
+#   bridge-app, written by the seed pod.
+# The Dockerfile starts from busybox through mirror.gcr.io, Google's mirror of
+# Docker Hub images, so builds do not hit Docker Hub pull limits.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bridge-app-files
+  namespace: starfleet
+data:
+  Dockerfile: |
+    FROM mirror.gcr.io/library/busybox:1.37.0
+    COPY message.txt /message.txt
+    CMD ["cat", "/message.txt"]
+  message.txt: |
+    bridge-app 1.1 is running
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bridge-source
+  namespace: starfleet
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: seed-bridge-source
+  namespace: starfleet
+spec:
+  restartPolicy: Never
+  containers:
+    - name: seed
+      image: busybox:1.37.0
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          mkdir -p /source/bridge-app
+          cp /files/Dockerfile /files/message.txt /source/bridge-app/
+          ls -lR /source
+      volumeMounts:
+        - name: source
+          mountPath: /source
+        - name: files
+          mountPath: /files
+  volumes:
+    - name: source
+      persistentVolumeClaim:
+        claimName: bridge-source
+    - name: files
+      configMap:
+        name: bridge-app-files

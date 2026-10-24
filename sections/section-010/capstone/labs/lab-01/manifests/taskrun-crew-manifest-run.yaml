@@ -1,0 +1,18 @@
+# The TaskRun the capstone starts with. It is correct; the faults are in the
+# Task.
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: crew-manifest-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: crew-manifest
+  params:
+    - name: crew
+      value:
+        - bridge
+        - scout
+        - shuttle
+    - name: deck
+      value: engineering

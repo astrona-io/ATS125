@@ -1,0 +1,17 @@
+# The TaskRun the lab starts with. It has a fault: it passes the parameter
+# labels as one string, but the Task declares labels as an array.
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: image-tag-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: image-tag
+  params:
+    - name: app
+      value: bridge
+    - name: version
+      value: "2.1"
+    - name: labels
+      value: "team=bridge tier=web"

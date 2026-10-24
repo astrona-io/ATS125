@@ -1,0 +1,280 @@
+# Course manifest for ATS125 - Tasks, Steps & Workspaces (Tekton).
+#
+# One entry per section under `modules:`. Each section lists, in order: its
+# README, then for each module the landing page (course.md), its parts
+# (course-0N-*.md), and right after the part a lab tests, the lab's
+# question.md reading and the `type: lab` entry. The module's summary page
+# comes last. The section capstone closes the section. Playgrounds are not
+# listed: the landing page's playground marker shows them. solution.md is
+# never listed.
+#
+# Every `path:` is relative to this file.
+
+training:
+  id: ATS125
+  title: "Tekton: Tasks, Steps & Workspaces"
+  maturity: draft
+  description: >
+    Training material covering the Tasks, Steps & Workspaces domain of the
+    Tekton training path: the anatomy of a Task (steps with command, args or
+    script, env and envFrom, workingDir, computeResources, stepTemplate and
+    StepActions), string, array and object parameters with defaults, Task
+    results and step results, sharing files through workspaces bound to
+    emptyDir, ConfigMap, Secret, PersistentVolumeClaim and volumeClaimTemplate
+    volumes, the TaskRun lifecycle and step termination states, onError and
+    step exit codes as the exit handler of a Task, and a containerized build
+    Task that builds an image with Buildah from a workspace, pushes it to a
+    registry and reports its digest. Each module pairs a layered reader with
+    an ungraded hands-on playground and a graded practice lab. Each section
+    closes with an integration capstone. Written for Tekton Pipelines
+    v1.17.1, tkn v0.46.2 and Buildah v1.43.5.
+
+  certification:
+    name: Tekton
+    code: TEKTON
+    provider: Astrona
+    domain: "Tasks, Steps & Workspaces"
+    weight: 20
+
+modules:
+
+  - id: module-intro
+    title: "Introduction"
+    description: >
+      Start here. What this course trains you to do, how it is laid out, how
+      to get your machine ready with the astrona command-line tool, how the
+      content is written and checked, who maintains it, and how to report a
+      mistake.
+
+    content:
+      - type: reading
+        title: Introduction
+        path: sections/intro/README.md
+      - type: reading
+        title: "Welcome To The Course"
+        path: sections/intro/course-01-welcome.md
+      - type: reading
+        title: "Get Your Machine Ready"
+        path: sections/intro/course-02-get-your-machine-ready.md
+      - type: reading
+        title: "How This Course Is Made"
+        path: sections/intro/course-03-how-this-course-is-made.md
+
+  - id: module-010
+    title: "Write Tasks With Steps, Parameters And Results"
+    description: >
+      The anatomy of a Task: steps with command and args or script, the
+      entrypoint binary, env, envFrom, workingDir, computeResources and the
+      stepTemplate, StepActions, string, array and object parameters with
+      defaults and safe substitution, Task results and step results.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-010/README.md
+
+      - type: reading
+        title: "Write A Task From Steps, Parameters And Results"
+        path: sections/section-010/module-01/course.md
+      - type: reading
+        title: "Steps: Image, Command, Script And Environment"
+        path: sections/section-010/module-01/course-01-steps-command-script-and-environment.md
+      - type: reading
+        title: "Parameters: Types, Defaults And Safe Substitution"
+        path: sections/section-010/module-01/course-02-parameter-types-and-defaults.md
+      - type: reading
+        title: "Results From Tasks And From Steps"
+        path: sections/section-010/module-01/course-03-task-results-and-step-results.md
+      - type: reading
+        title: Question
+        path: sections/section-010/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Repair A Task's Parameters, Environment And Results Lab"
+        path: sections/section-010/module-01/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 20m
+        topic: task-anatomy
+        task_kind: troubleshooting
+        tags: [task, taskrun, params, array-params, step-template, env, results]
+        learning_goals:
+          - Read why a TaskRun failed validation because a parameter has the wrong type
+          - Fix a step that hides a stepTemplate variable and a result that ends with a newline
+          - Prove the fix with a TaskRun whose results have exactly the expected values
+        resources:
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+          - name: "Variable substitutions"
+            url: https://tekton.dev/docs/pipelines/variables/
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-010/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Repair A Task Built From Steps, Parameters And Results Capstone"
+        path: sections/section-010/capstone/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: task-anatomy
+        task_kind: troubleshooting
+        tags: [script, secret-key-ref, step-template, array-params, step-results, status-conditions]
+        learning_goals:
+          - Find a step that cannot start, a script with the wrong shebang and a stepTemplate that ignores a parameter
+          - Fix the Task without changing the Secret it reads
+          - Prove the fix with a TaskRun and a grader run that pass values through step results
+        resources:
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+          - name: "StepActions and step results"
+            url: https://tekton.dev/docs/pipelines/stepactions/
+          - name: "Container contract"
+            url: https://tekton.dev/docs/pipelines/container-contract/
+
+  - id: module-020
+    title: "Share Data With Workspaces"
+    description: >
+      Workspaces: declarations with mountPath, readOnly and optional, the
+      workspace variables, emptyDir, ConfigMap, Secret, PersistentVolumeClaim
+      and volumeClaimTemplate bindings, subPath, isolated workspaces, and the
+      one-PersistentVolumeClaim rule of the default coschedule setting.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-020/README.md
+
+      - type: reading
+        title: "Share Files With Workspaces"
+        path: sections/section-020/module-01/course.md
+      - type: reading
+        title: "Declare Workspaces And Bind An emptyDir"
+        path: sections/section-020/module-01/course-01-declare-workspaces-and-bind-emptydir.md
+      - type: reading
+        title: "ConfigMap And Secret Workspaces"
+        path: sections/section-020/module-01/course-02-configmap-and-secret-workspaces.md
+      - type: reading
+        title: "Persistent Workspaces With PersistentVolumeClaims"
+        path: sections/section-020/module-01/course-03-persistent-workspaces-with-pvcs.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Bind Workspaces To A TaskRun Lab"
+        path: sections/section-020/module-01/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 20m
+        topic: workspaces
+        task_kind: build
+        tags: [workspaces, pvc-workspace, subpath, configmap-workspace, secret-workspace, optional-workspace, isolated-workspace]
+        learning_goals:
+          - Read the workspaces a Task declares, including read-only, optional and isolated ones
+          - Bind a PersistentVolumeClaim with a subPath, a ConfigMap and a Secret in a TaskRun
+          - Prove that the output file landed in the right folder of the PersistentVolumeClaim
+        resources:
+          - name: "Workspaces"
+            url: https://tekton.dev/docs/pipelines/workspaces/
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-020/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Repair The Workspaces Of A Report Task Capstone"
+        path: sections/section-020/capstone/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: workspaces
+        task_kind: troubleshooting
+        tags: [pvc-workspace, coschedule, readonly-workspace, subpath, emptydir, status-conditions]
+        learning_goals:
+          - Find why a TaskRun with two PersistentVolumeClaims fails validation and why a step cannot write its workspace
+          - Find a wrong subPath that lets the run succeed on the wrong data
+          - Prove that the history in the PersistentVolumeClaim grew by the new line
+        resources:
+          - name: "Workspaces"
+            url: https://tekton.dev/docs/pipelines/workspaces/
+          - name: "Additional configuration options"
+            url: https://tekton.dev/docs/pipelines/additional-configs/
+
+  - id: module-030
+    title: "Step Lifecycle And A Container Build Task"
+    description: >
+      The TaskRun lifecycle and the Succeeded condition, step termination
+      reasons, step and run timeouts, onError and step exit codes as the exit
+      handler of a Task, and a Buildah Task that builds an image from a
+      workspace, pushes it to a registry and reports IMAGE_DIGEST and
+      IMAGE_URL.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-030/README.md
+
+      - type: reading
+        title: "Control Step Failures And Build An Image"
+        path: sections/section-030/module-01/course.md
+      - type: reading
+        title: "The TaskRun Lifecycle And Step Termination States"
+        path: sections/section-030/module-01/course-01-taskrun-lifecycle-and-step-states.md
+      - type: reading
+        title: "Handle Step Failures With onError And Exit Codes"
+        path: sections/section-030/module-01/course-02-onerror-and-exit-codes.md
+      - type: reading
+        title: "Build And Push An Image From A Workspace"
+        path: sections/section-030/module-01/course-03-build-and-push-an-image.md
+      - type: reading
+        title: Question
+        path: sections/section-030/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Write A Build Task That Pushes To A Registry Lab"
+        path: sections/section-030/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: image-build
+        task_kind: build
+        tags: [buildah, task-volumes, pvc-workspace, params, image-digest, oci-registry, tls-verify]
+        learning_goals:
+          - Write a Buildah Task with IMAGE, CONTEXT and DOCKERFILE parameters, a source workspace and digest results
+          - Build from a PersistentVolumeClaim and push to an in-cluster registry without privileged containers
+          - Prove with the registry API that the pushed digest matches IMAGE_DIGEST
+        resources:
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+          - name: "Workspaces"
+            url: https://tekton.dev/docs/pipelines/workspaces/
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+      - type: reading
+        title: Summary
+        path: sections/section-030/module-01/course-04-summary.md
+
+      - type: reading
+        title: Question
+        path: sections/section-030/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Repair A Failing Image Build Capstone"
+        path: sections/section-030/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 30m
+        topic: step-lifecycle
+        task_kind: troubleshooting
+        tags: [on-error, exit-code, exit-handler, termination-reason, buildah, tls-verify, image-digest]
+        learning_goals:
+          - Find failed steps in a TaskRun that reports success, from status.steps and the step logs
+          - Fix the Buildah storage driver and the push to an HTTP registry, and make the last step fail the run on errors
+          - Prove both the success path in the registry and the failure path with a broken build
+        resources:
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+          - name: "Variable substitutions"
+            url: https://tekton.dev/docs/pipelines/variables/

@@ -1,0 +1,22 @@
+# Reference end state: the TaskRun binds source to the bridge folder of the
+# PersistentVolumeClaim roster-data, settings to the ConfigMap and token to
+# the Secret.
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: crew-roster-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: crew-roster
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: roster-data
+      subPath: bridge
+    - name: settings
+      configMap:
+        name: roster-settings
+    - name: token
+      secret:
+        secretName: roster-token

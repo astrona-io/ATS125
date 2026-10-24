@@ -1,0 +1,41 @@
+# The Task the capstone starts with. It has a fault: the workspace output is
+# declared readOnly, so the step append cannot write to it.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: deck-report
+  namespace: starfleet
+spec:
+  description: Adds one report line for a deck to history.txt and counts the lines.
+  params:
+    - name: run-date
+      type: string
+      description: The date of the report, for example 2026-10-15
+  workspaces:
+    - name: output
+      description: Holds history.txt, which keeps every report line
+      readOnly: true
+    - name: config
+      description: Report settings from a ConfigMap. The key deck names the deck.
+      readOnly: true
+    - name: cache
+      description: Scratch space between the steps. Nothing in it needs to persist.
+  results:
+    - name: entries
+      description: The number of lines in history.txt after this run
+  steps:
+    - name: render
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        deck="$(cat "$(workspaces.config.path)/deck")"
+        echo "$(params.run-date) $deck: ok" > "$(workspaces.cache.path)/line.txt"
+        cat "$(workspaces.cache.path)/line.txt"
+    - name: append
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        cat "$(workspaces.cache.path)/line.txt" >> "$(workspaces.output.path)/history.txt"
+        printf '%s' "$(grep -c . "$(workspaces.output.path)/history.txt")" > "$(results.entries.path)"

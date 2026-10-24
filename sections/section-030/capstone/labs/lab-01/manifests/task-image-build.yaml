@@ -1,0 +1,82 @@
+# The Task the capstone starts with. It has three faults:
+# - neither Buildah command sets --storage-driver=vfs, so Buildah tries the
+#   overlay driver, which needs /dev/fuse;
+# - the push keeps TLS verification on, but the lab registry speaks HTTP;
+# - the step report writes BUILD_STATUS but always ends with exit code 0, so
+#   a failed build still gives a TaskRun that succeeded.
+# Finding and fixing them is the task.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: image-build
+  namespace: starfleet
+spec:
+  description: Builds and pushes an image, then reports how the build went.
+  params:
+    - name: IMAGE
+      type: string
+      description: The full image reference to push, with its tag
+    - name: CONTEXT
+      type: string
+      description: The build context, relative to the source workspace
+      default: "."
+    - name: DOCKERFILE
+      type: string
+      description: The Dockerfile, relative to the build context
+      default: Dockerfile
+  workspaces:
+    - name: source
+      description: Holds the build context
+  results:
+    - name: IMAGE_DIGEST
+      description: The digest of the pushed image manifest
+    - name: IMAGE_URL
+      description: The image reference that was pushed
+    - name: BUILD_STATUS
+      description: One line about how the build and the push went
+  volumes:
+    - name: container-storage
+      emptyDir: {}
+  stepTemplate:
+    image: quay.io/buildah/stable:v1.43.5
+    workingDir: $(workspaces.source.path)
+    volumeMounts:
+      - name: container-storage
+        mountPath: /var/lib/containers
+  steps:
+    - name: build
+      onError: continue
+      script: |
+        #!/bin/sh
+        set -eu
+        buildah build \
+          --format=oci \
+          --file "$(params.CONTEXT)/$(params.DOCKERFILE)" \
+          --tag "$(params.IMAGE)" \
+          "$(params.CONTEXT)"
+    - name: push
+      onError: continue
+      script: |
+        #!/bin/sh
+        set -eu
+        buildah push \
+          --digestfile /tmp/image-digest \
+          "$(params.IMAGE)"
+        printf '%s' "$(cat /tmp/image-digest)" > "$(results.IMAGE_DIGEST.path)"
+        printf '%s' "$(params.IMAGE)" > "$(results.IMAGE_URL.path)"
+    - name: report
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -u
+        build_code="$(cat "$(steps.step-build.exitCode.path)")"
+        push_code="$(cat "$(steps.step-push.exitCode.path)")"
+        if [ "$build_code" = "0" ] && [ "$push_code" = "0" ]; then
+          printf 'built and pushed' | tee "$(results.BUILD_STATUS.path)"
+          echo
+        else
+          printf 'failed: build exit %s, push exit %s' "$build_code" "$push_code" | tee "$(results.BUILD_STATUS.path)"
+          echo
+          echo "The image was not pushed. Read the logs of step-build and step-push." >&2
+        fi
+        exit 0

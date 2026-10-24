@@ -1,0 +1,56 @@
+# Bind Workspaces To A TaskRun
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-125-lab-020-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-125-lab-020-01-setup"
+      description: "Creates and fills the PersistentVolumeClaim roster-data, the ConfigMap roster-settings, the Secret roster-token and the Task crew-roster"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The TaskRun a correct learner writes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-roster-run"
+      description: "Confirms crew-roster-run binds the PVC with subPath bridge, the ConfigMap and the Secret, and succeeded"
+      type: "file"
+      source: "validation/validate-roster-run.sh"
+    - name: "validate-roster-results"
+      description: "Confirms crew-roster-run reports 'bridge: 3 crew members' and signed=true"
+      type: "file"
+      source: "validation/validate-roster-results.sh"
+    - name: "validate-roster-file"
+      description: "Runs a read-only TaskRun that finds roster.txt and roster.sig in the bridge folder of the PVC"
+      type: "file"
+      source: "validation/validate-roster-file.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

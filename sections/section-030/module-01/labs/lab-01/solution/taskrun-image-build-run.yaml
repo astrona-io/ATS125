@@ -1,0 +1,19 @@
+# Reference end state: build bridge-app from the PersistentVolumeClaim
+# bridge-source and push it as bridge-app:1.0.
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: image-build-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: image-build
+  params:
+    - name: IMAGE
+      value: registry.registry.svc.cluster.local:5000/starfleet/bridge-app:1.0
+    - name: CONTEXT
+      value: bridge-app
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: bridge-source

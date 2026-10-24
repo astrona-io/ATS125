@@ -1,0 +1,29 @@
+# Control Step Failures And Build An Image (PLAYGROUND) — Playground environment
+# A clean sandbox: it spins up, runs OS prep, then stays running for free
+# exploration. No task, no grading, no `astrona submit`.
+# Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-125-playground-030-01"
+  docs:
+    guide: "docs/overview.md"
+bootstrap:
+  init:
+    - name: "prepare"
+      description: "Install the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, wait for the webhook and the registry, and fill the PersistentVolumeClaim bridge-source."
+      type: "file"
+      source: "bootstrap/prepare.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet, the registry and the client pod in the namespace registry."
+      type: "file"
+      source: "manifests/lab-start.yaml"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0
+      - quay.io/buildah/stable:v1.43.5
+      - registry:3.1.2
+      - nicolaka/netshoot:v0.13

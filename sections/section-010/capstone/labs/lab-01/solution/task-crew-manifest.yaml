@@ -1,0 +1,66 @@
+# Reference end state of the Task: report reads the key api-token, collect
+# runs with /bin/sh, and the stepTemplate takes DECK from the parameter deck.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: crew-manifest
+  namespace: starfleet
+spec:
+  description: Writes a crew manifest, counts it and reports the result.
+  params:
+    - name: crew
+      type: array
+      description: The crew members, one per item
+    - name: deck
+      type: string
+      description: The deck the crew works on
+      default: bridge
+  results:
+    - name: crew-count
+      description: How many crew members are on the manifest
+      value: $(steps.measure.results.lines)
+    - name: summary
+      description: One line about the deck and its crew
+  stepTemplate:
+    env:
+      - name: DECK
+        value: $(params.deck)
+  steps:
+    - name: collect
+      image: busybox:1.37.0
+      args: ["$(params.crew[*])"]
+      script: |
+        #!/bin/sh
+        set -eu
+        for member in "$@"; do
+          echo "$member" >> /workspace/manifest.txt
+        done
+        echo "Collected $# crew members for $DECK"
+    - name: measure
+      image: busybox:1.37.0
+      results:
+        - name: lines
+          type: string
+          description: The number of lines in the manifest
+      script: |
+        #!/bin/sh
+        set -eu
+        printf '%s' "$(grep -c . /workspace/manifest.txt)" > "$(step.results.lines.path)"
+    - name: report
+      image: busybox:1.37.0
+      env:
+        - name: COUNT
+          value: $(steps.measure.results.lines)
+        - name: REPORT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: report-token
+              key: api-token
+      script: |
+        #!/bin/sh
+        set -eu
+        if [ -z "$REPORT_TOKEN" ]; then
+          echo "REPORT_TOKEN is empty" >&2
+          exit 1
+        fi
+        printf '%s: %s crew members' "$DECK" "$COUNT" | tee "$(results.summary.path)"

@@ -1,0 +1,20 @@
+# The TaskRun the capstone starts with. It is correct; the faults are in the
+# Task. Because of the third fault it ends with Succeeded=True although
+# nothing was pushed.
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: image-build-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: image-build
+  params:
+    - name: IMAGE
+      value: registry.registry.svc.cluster.local:5000/starfleet/bridge-app:1.1
+    - name: CONTEXT
+      value: bridge-app
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: bridge-source

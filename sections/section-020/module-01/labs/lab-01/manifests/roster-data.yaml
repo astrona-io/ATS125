@@ -1,0 +1,61 @@
+# The data the Task crew-roster works on:
+# - the PersistentVolumeClaim roster-data (kind's default StorageClass
+#   "standard"); the seed pod writes bridge/crew.txt and scout/crew.txt;
+# - the ConfigMap roster-settings with the key deck;
+# - the Secret roster-token with the key token (lab-only value).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: roster-data
+  namespace: starfleet
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: roster-settings
+  namespace: starfleet
+data:
+  deck: bridge
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: roster-token
+  namespace: starfleet
+type: Opaque
+stringData:
+  token: lab-only-roster-token
+---
+# Writes the crew lists into the PersistentVolumeClaim, then exits.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: seed-roster-data
+  namespace: starfleet
+spec:
+  restartPolicy: Never
+  containers:
+    - name: seed
+      image: busybox:1.37.0
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          mkdir -p /data/bridge /data/scout
+          printf 'pilot\nengineer\nnavigator\n' > /data/bridge/crew.txt
+          printf 'pilot\nmedic\n' > /data/scout/crew.txt
+          ls -lR /data
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: roster-data

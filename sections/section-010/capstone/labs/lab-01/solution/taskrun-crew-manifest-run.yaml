@@ -1,0 +1,18 @@
+# Reference end state of the TaskRun. It is the same as the starting
+# TaskRun; it is created again so that it runs the fixed Task.
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: crew-manifest-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: crew-manifest
+  params:
+    - name: crew
+      value:
+        - bridge
+        - scout
+        - shuttle
+    - name: deck
+      value: engineering

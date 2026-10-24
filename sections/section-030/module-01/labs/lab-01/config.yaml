@@ -1,0 +1,59 @@
+# Write A Build Task That Pushes To A Registry
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-125-lab-030-01"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook and the in-cluster registry answer"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-125-lab-030-01-setup"
+      description: "Creates the PersistentVolumeClaim bridge-source and copies the Dockerfile and message.txt into its folder bridge-app"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet, the registry and the client pod in the namespace registry"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment and the registry are ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The Task and TaskRun a correct learner writes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-task-image-build"
+      description: "Confirms the Task image-build has the agreed params, workspace, results and Buildah steps"
+      type: "file"
+      source: "validation/validate-task-image-build.sh"
+    - name: "validate-build-run"
+      description: "Confirms image-build-run succeeded and the registry digest of bridge-app:1.0 matches IMAGE_DIGEST"
+      type: "file"
+      source: "validation/validate-build-run.sh"
+    - name: "validate-grader-build"
+      description: "Runs the Task with a grader tag and compares the registry digest with IMAGE_DIGEST"
+      type: "file"
+      source: "validation/validate-grader-build.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0
+      - quay.io/buildah/stable:v1.43.5
+      - registry:3.1.2
+      - nicolaka/netshoot:v0.13

@@ -1,0 +1,59 @@
+# Repair A Failing Image Build (section 030 capstone)
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-125-capstone-030"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook and the in-cluster registry answer"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-125-capstone-030-setup"
+      description: "Fills the PersistentVolumeClaim bridge-source, applies the Task image-build with three faults and the TaskRun image-build-run, and waits until it has ended"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet, the registry and the client pod in the namespace registry"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment and the registry are ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The fix a correct learner makes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-build-run"
+      description: "Confirms image-build-run succeeded with build, push and report at exit code 0 and BUILD_STATUS 'built and pushed'"
+      type: "file"
+      source: "validation/validate-build-run.sh"
+    - name: "validate-image-in-registry"
+      description: "Confirms the registry serves bridge-app:1.1 with the digest in IMAGE_DIGEST"
+      type: "file"
+      source: "validation/validate-image-in-registry.sh"
+    - name: "validate-exit-handler"
+      description: "Runs a build with a missing Dockerfile and confirms report runs and fails the TaskRun"
+      type: "file"
+      source: "validation/validate-exit-handler.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0
+      - quay.io/buildah/stable:v1.43.5
+      - registry:3.1.2
+      - nicolaka/netshoot:v0.13

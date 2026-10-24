@@ -1,0 +1,51 @@
+# Reference end state of the Task: compose takes REGISTRY from the
+# stepTemplate, and count-labels writes its result without a newline.
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: image-tag
+  namespace: starfleet
+spec:
+  description: Works out the image reference of an app and counts its labels.
+  params:
+    - name: app
+      type: string
+      description: The name of the app
+    - name: version
+      type: string
+      description: The version of the app
+      default: "1.0"
+    - name: labels
+      type: array
+      description: Labels for the image, one key=value per item
+  results:
+    - name: image-ref
+      description: The full image reference
+    - name: label-count
+      description: How many labels the image gets
+  stepTemplate:
+    env:
+      - name: REGISTRY
+        value: registry.registry.svc.cluster.local:5000
+  steps:
+    - name: compose
+      image: busybox:1.37.0
+      env:
+        - name: APP
+          value: $(params.app)
+        - name: VERSION
+          value: $(params.version)
+      script: |
+        #!/bin/sh
+        set -eu
+        printf '%s/starfleet/%s:%s' "$REGISTRY" "$APP" "$VERSION" | tee "$(results.image-ref.path)"
+    - name: count-labels
+      image: busybox:1.37.0
+      args: ["$(params.labels[*])"]
+      script: |
+        #!/bin/sh
+        set -eu
+        for label in "$@"; do
+          echo "label: $label"
+        done
+        printf '%s' "$#" > "$(results.label-count.path)"

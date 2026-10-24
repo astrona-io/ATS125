@@ -1,0 +1,56 @@
+# Repair The Workspaces Of A Report Task (section 020 capstone)
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-125-capstone-020"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+    - name: "ats-125-capstone-020-setup"
+      description: "Creates and fills report-data, applies the Task deck-report and the TaskRun deck-report-run with three workspace faults, and waits until it has failed"
+      type: "file"
+      source: "bootstrap/02-seed-state.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The fix a correct learner makes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-report-run"
+      description: "Confirms deck-report-run binds report-data (subPath reports) as its only PVC and succeeded"
+      type: "file"
+      source: "validation/validate-report-run.sh"
+    - name: "validate-report-history"
+      description: "Reads reports/history.txt with a grader TaskRun and compares it with the result entries"
+      type: "file"
+      source: "validation/validate-report-history.sh"
+    - name: "validate-task-deck-report"
+      description: "Confirms output is writable and config read-only, and a grader run with empty volumes succeeds"
+      type: "file"
+      source: "validation/validate-task-deck-report.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0
