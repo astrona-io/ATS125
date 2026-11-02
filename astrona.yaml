@@ -33,8 +33,6 @@ training:
     name: Tekton
     code: TEKTON
     provider: Astrona
-    domain: "Tasks, Steps & Workspaces"
-    weight: 20
 
 modules:
 
