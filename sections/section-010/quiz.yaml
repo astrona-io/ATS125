@@ -1,0 +1,244 @@
+schema_version: 1
+kind: question_bank
+id: ats125-010
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-010
+  title: "Write Tasks With Steps, Parameters And Results"
+placement:
+  position: after
+  reading: sections/section-010/capstone/labs/lab-01/question.md
+questions:
+  - id: ats125-010-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what runs as the command of a step"
+    source_readings:
+      - sections/section-010/module-01/course-01-steps-command-script-and-environment.md
+    prompt: "What does the tekton-pipelines-controller put in the command of every step container?"
+    options:
+      - id: a
+        text: "The entrypoint binary `/tekton/bin/entrypoint`, which runs your command in order and records its exit code."
+        explanation: "Correct. The controller replaces the command and passes yours as `-entrypoint`."
+      - id: b
+        text: "The command from the `Task` exactly as written, with no change."
+        explanation: "Not correct. Tekton always replaces it with the entrypoint binary."
+      - id: c
+        text: "A call to a Docker daemon on the node that starts the image."
+        explanation: "Not correct. Steps are normal containers and no Docker daemon is involved."
+      - id: d
+        text: "A sidecar proxy that forwards the step command to the kubelet."
+        explanation: "Not correct. No proxy is involved. The entrypoint binary runs inside the step container."
+    correct_option: a
+    explanation: "Correct. The controller replaces the command and passes yours as `-entrypoint`."
+
+  - id: ats125-010-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know the rule for script and command"
+    source_readings:
+      - sections/section-010/module-01/course-01-steps-command-script-and-environment.md
+    prompt: "A step sets both `script` and `command`. What happens when you apply the `Task`?"
+    options:
+      - id: a
+        text: "The `script` runs and the `command` is ignored."
+        explanation: "Not correct. The webhook does not pick one. It rejects the step."
+      - id: b
+        text: "The webhook rejects the `Task`, because a step has `script` or `command`, never both."
+        explanation: "Correct. The two fields exclude each other."
+      - id: c
+        text: "The `command` runs first and the `script` runs after it."
+        explanation: "Not correct. A step runs only one of them."
+      - id: d
+        text: "The `Task` is accepted and the `TaskRun` fails with `StepFailed`."
+        explanation: "Not correct. The error comes at apply time, before any run."
+    correct_option: b
+    explanation: "Correct. The two fields exclude each other."
+
+  - id: ats125-010-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Find the cause of exit code 127 in a step"
+    source_readings:
+      - sections/section-010/module-01/course-01-steps-command-script-and-environment.md
+    prompt: "A step in `busybox:1.37.0` uses the script shebang `#!/bin/bash` and fails with exit code 127. Why?"
+    options:
+      - id: a
+        text: "Tekton allows only `#!/bin/sh` as a shebang."
+        explanation: "Not correct. Tekton accepts any interpreter that exists in the image."
+      - id: b
+        text: "A script must start with `set -e` before the shebang."
+        explanation: "Not correct. The shebang must be the first line, and `set -e` is not required."
+      - id: c
+        text: "The image has no `bash`, so the interpreter in the shebang does not exist."
+        explanation: "Correct. Use `#!/bin/sh` or an image that has `bash`."
+      - id: d
+        text: "The `script` field cannot run in a step that also has `env`."
+        explanation: "Not correct. `script` and `env` work together."
+    correct_option: c
+    explanation: "Correct. Use `#!/bin/sh` or an image that has `bash`."
+
+  - id: ats125-010-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict which env value wins"
+    source_readings:
+      - sections/section-010/module-01/course-01-steps-command-script-and-environment.md
+    prompt: "The `stepTemplate` sets `DECK=bridge` and one step sets `DECK=engineering`. What value does that step see?"
+    options:
+      - id: a
+        text: "`bridge`, because the `stepTemplate` is applied last."
+        explanation: "Not correct. The template is merged first and the step overrides it."
+      - id: b
+        text: "Both values, as a list in one variable."
+        explanation: "Not correct. An environment variable has one value."
+      - id: c
+        text: "Neither. Tekton rejects the duplicate name."
+        explanation: "Not correct. Tekton merges env by name without an error."
+      - id: d
+        text: "`engineering`, because the value in the step wins over the `stepTemplate`."
+        explanation: "Correct. Tekton merges env by name and the step value wins."
+    correct_option: d
+    explanation: "Correct. Tekton merges env by name and the step value wins."
+
+  - id: ats125-010-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the failure of a missing ConfigMap key"
+    source_readings:
+      - sections/section-010/module-01/course-01-steps-command-script-and-environment.md
+    prompt: "A step reads an env variable with `valueFrom.configMapKeyRef`, and the key does not exist. What does the `TaskRun` show?"
+    options:
+      - id: a
+        text: "The step container waits with `CreateContainerConfigError`, and the `TaskRun` fails with that reason."
+        explanation: "Correct. The kubelet cannot create the container, and the container state names the missing key."
+      - id: b
+        text: "The step starts with an empty variable and the run succeeds."
+        explanation: "Not correct. The kubelet refuses to create the container."
+      - id: c
+        text: "The reason `TaskRunValidationFailed`, before any pod exists."
+        explanation: "Not correct. The webhook cannot see whether the key exists. The kubelet finds out later."
+      - id: d
+        text: "The step ends as `Skipped` and the next step runs."
+        explanation: "Not correct. The step never starts, and the run fails."
+    correct_option: a
+    explanation: "Correct. The kubelet cannot create the container, and the container state names the missing key."
+
+  - id: ats125-010-q06
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know what happens with a wrong parameter type"
+    source_readings:
+      - sections/section-010/module-01/course-02-parameter-types-and-defaults.md
+    prompt: "A `TaskRun` passes the string `engines sensors` for a parameter that the `Task` declares as `array`. What happens?"
+    options:
+      - id: a
+        text: "Tekton splits the string at the space and the run succeeds."
+        explanation: "Not correct. Tekton never splits a string into an array."
+      - id: b
+        text: "The run fails with `TaskRunValidationFailed` before a pod exists."
+        explanation: "Correct. Tekton does not split strings, and it checks the types before it creates the pod."
+      - id: c
+        text: "The pod starts and the step fails with exit code 1."
+        explanation: "Not correct. The check happens before the pod is created."
+      - id: d
+        text: "The `Task` default is used and the passed value is ignored."
+        explanation: "Not correct. A passed value is checked, and a wrong type is an error."
+    correct_option: b
+    explanation: "Correct. Tekton does not split strings, and it checks the types before it creates the pod."
+
+  - id: ats125-010-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Place an array parameter correctly"
+    source_readings:
+      - sections/section-010/module-01/course-02-parameter-types-and-defaults.md
+    prompt: "Where can `$(params.checks[*])` appear in a step?"
+    options:
+      - id: a
+        text: "Inside the text of a `script`."
+        explanation: "Not correct. The webhook rejects an array reference in `script`."
+      - id: b
+        text: "As the value of an `env` variable."
+        explanation: "Not correct. The webhook rejects it in `env` too."
+      - id: c
+        text: "As a whole item of `command` or `args`."
+        explanation: "Correct. The script then reads the items as `$1`, `$2` and so on."
+      - id: d
+        text: "In the `image` field."
+        explanation: "Not correct. Only a string parameter can go in `image`."
+    correct_option: c
+    explanation: "Correct. The script then reads the items as `$1`, `$2` and so on."
+
+  - id: ats125-010-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pass a parameter value safely"
+    source_readings:
+      - sections/section-010/module-01/course-02-parameter-types-and-defaults.md
+    prompt: "A parameter value can hold a `;` or a quote. How do you use it in a script without changing the shell code?"
+    options:
+      - id: a
+        text: "Write `$(params.crew)` directly in the script text."
+        explanation: "Not correct. Tekton pastes the text into the code, so the `;` becomes code."
+      - id: b
+        text: "Declare the parameter as `type: array`."
+        explanation: "Not correct. Arrays are not allowed in a script and do not change quoting."
+      - id: c
+        text: "Give the parameter a `default` value."
+        explanation: "Not correct. A default does not protect against a value that a `TaskRun` passes."
+      - id: d
+        text: "Pass it through an `env` variable and use the quoted variable in the script."
+        explanation: "Correct. The shell treats a variable as data."
+    correct_option: d
+    explanation: "Correct. The shell treats a variable as data."
+
+  - id: ats125-010-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Write a result without a newline"
+    source_readings:
+      - sections/section-010/module-01/course-03-task-results-and-step-results.md
+    prompt: "A step writes a result with `echo 2 > \"$(results.tag-count.path)\"`. What value does the `TaskRun` report?"
+    options:
+      - id: a
+        text: "`2` followed by a newline, so use `printf '%s'` to write the exact value."
+        explanation: "Correct. Tekton keeps the result exactly as the step wrote it."
+      - id: b
+        text: "`2`, because Tekton removes the newline."
+        explanation: "Not correct. Tekton does not trim results."
+      - id: c
+        text: "An empty value, because `echo` writes to the log only."
+        explanation: "Not correct. The redirect writes the file that Tekton reads."
+      - id: d
+        text: "The run fails, because results must end with a newline."
+        explanation: "Not correct. No newline is required."
+    correct_option: a
+    explanation: "Correct. Tekton keeps the result exactly as the step wrote it."
+
+  - id: ats125-010-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Use a step result"
+    source_readings:
+      - sections/section-010/module-01/course-03-task-results-and-step-results.md
+    prompt: "A step writes a step result named `lines`. How does a later step read the value?"
+    options:
+      - id: a
+        text: "It reads `$(results.lines.path)` inside its `script`."
+        explanation: "Not correct. That is the path of a Task result, and a step result cannot be used in a `script`."
+      - id: b
+        text: "The first step writes to `$(step.results.lines.path)`, and the later step reads `$(steps.<step-name>.results.lines)` in `env`, `command` or `args`."
+        explanation: "Correct. `step` is singular for writing and `steps` is plural for reading."
+      - id: c
+        text: "It reads `$(steps.<step-name>.results.lines)` inside its `script`."
+        explanation: "Not correct. The webhook rejects a step result in `script`."
+      - id: d
+        text: "It reads the `TaskRun` log of the first step."
+        explanation: "Not correct. Only the result file counts. The log is not a source of values."
+    correct_option: b
+    explanation: "Correct. `step` is singular for writing and `steps` is plural for reading."

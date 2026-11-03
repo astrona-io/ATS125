@@ -1,0 +1,218 @@
+schema_version: 1
+kind: question_bank
+id: ats125-final
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: domain
+  id: tasks-steps-workspaces
+  title: "Tasks, Steps & Workspaces"
+questions:
+  - id: ats125-final-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know the rule for script and command"
+    source_readings:
+      - sections/section-010/module-01/course-01-steps-command-script-and-environment.md
+    prompt: "A step sets both `script` and `command`. What happens when you apply the `Task`?"
+    options:
+      - id: a
+        text: "The webhook rejects the `Task`, because a step has `script` or `command`, never both."
+        explanation: "Correct. The two fields exclude each other."
+      - id: b
+        text: "The `script` runs and the `command` is ignored."
+        explanation: "Not correct. The webhook does not pick one. It rejects the step."
+      - id: c
+        text: "The `command` runs first and the `script` runs after it."
+        explanation: "Not correct. A step runs only one of them."
+      - id: d
+        text: "The `Task` is accepted and the `TaskRun` fails with `StepFailed`."
+        explanation: "Not correct. The error comes at apply time, before any run."
+    correct_option: a
+    explanation: "Correct. The two fields exclude each other."
+
+  - id: ats125-final-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know what happens with a wrong parameter type"
+    source_readings:
+      - sections/section-010/module-01/course-02-parameter-types-and-defaults.md
+    prompt: "A `TaskRun` passes the string `engines sensors` for a parameter that the `Task` declares as `array`. What happens?"
+    options:
+      - id: a
+        text: "Tekton splits the string at the space and the run succeeds."
+        explanation: "Not correct. Tekton never splits a string into an array."
+      - id: b
+        text: "The pod starts and the step fails with exit code 1."
+        explanation: "Not correct. The check happens before the pod is created."
+      - id: c
+        text: "The `Task` default is used and the passed value is ignored."
+        explanation: "Not correct. A passed value is checked, and a wrong type is an error."
+      - id: d
+        text: "The run fails with `TaskRunValidationFailed` before a pod exists."
+        explanation: "Correct. Tekton does not split strings, and it checks the types before it creates the pod."
+    correct_option: d
+    explanation: "Correct. Tekton does not split strings, and it checks the types before it creates the pod."
+
+  - id: ats125-final-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Write a result without a newline"
+    source_readings:
+      - sections/section-010/module-01/course-03-task-results-and-step-results.md
+    prompt: "A step writes a result with `echo 2 > \"$(results.tag-count.path)\"`. What value does the `TaskRun` report?"
+    options:
+      - id: a
+        text: "`2`, because Tekton removes the newline."
+        explanation: "Not correct. Tekton does not trim results."
+      - id: b
+        text: "An empty value, because `echo` writes to the log only."
+        explanation: "Not correct. The redirect writes the file that Tekton reads."
+      - id: c
+        text: "`2` followed by a newline, so use `printf '%s'` to write the exact value."
+        explanation: "Correct. Tekton keeps the result exactly as the step wrote it."
+      - id: d
+        text: "The run fails, because results must end with a newline."
+        explanation: "Not correct. No newline is required."
+    correct_option: c
+    explanation: "Correct. Tekton keeps the result exactly as the step wrote it."
+
+  - id: ats125-final-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know what happens with an unbound workspace"
+    source_readings:
+      - sections/section-020/module-01/course-01-declare-workspaces-and-bind-emptydir.md
+    prompt: "A `TaskRun` does not bind a workspace that the `Task` declares without `optional`. What happens?"
+    options:
+      - id: a
+        text: "The step runs and `$(workspaces.<name>.path)` is empty."
+        explanation: "Not correct. Only an optional workspace gives an empty path."
+      - id: b
+        text: "The run fails with `TaskRunValidationFailed` before a pod exists."
+        explanation: "Correct. The message says the declared workspace is required but has not been bound."
+      - id: c
+        text: "Tekton binds an `emptyDir` on its own."
+        explanation: "Not correct. A default binding exists only if the `config-defaults` ConfigMap sets one."
+      - id: d
+        text: "The pod starts and the first step is `Skipped`."
+        explanation: "Not correct. The check fails before the pod is created."
+    correct_option: b
+    explanation: "Correct. The message says the declared workspace is required but has not been bound."
+
+  - id: ats125-final-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Limit a Secret to one step"
+    source_readings:
+      - sections/section-020/module-01/course-02-configmap-and-secret-workspaces.md
+    prompt: "How do you mount a Secret workspace into only one step?"
+    options:
+      - id: a
+        text: "List the workspace under `workspaces` of that step, which makes it an isolated workspace."
+        explanation: "Correct. Only steps that list it mount it."
+      - id: b
+        text: "Set `readOnly: true` in the declaration."
+        explanation: "Not correct. `readOnly` changes the mode and does not limit the steps."
+      - id: c
+        text: "Set `optional: true` in the declaration."
+        explanation: "Not correct. `optional` lets the run leave the workspace out."
+      - id: d
+        text: "Bind the Secret with `subPath` set to the step name."
+        explanation: "Not correct. `subPath` picks a folder of a volume and does not pick steps."
+    correct_option: a
+    explanation: "Correct. Only steps that list it mount it."
+
+  - id: ats125-final-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Stay inside the one-PVC rule"
+    source_readings:
+      - sections/section-020/module-01/course-03-persistent-workspaces-with-pvcs.md
+    prompt: "With the default `coschedule: workspaces`, a `TaskRun` binds two different PersistentVolumeClaims. What happens, and what is a clean fix?"
+    options:
+      - id: a
+        text: "The run succeeds, because each workspace has its own volume."
+        explanation: "Not correct. The default `coschedule` setting refuses it."
+      - id: b
+        text: "The run fails only if the claims use `ReadWriteOnce`."
+        explanation: "Not correct. The access mode does not matter for this check."
+      - id: c
+        text: "The run fails. Set `coschedule` to another value in that `Task`."
+        explanation: "Not correct. `coschedule` is a cluster-wide setting of an administrator."
+      - id: d
+        text: "The run fails with `TaskRunValidationFailed`. Bind one claim with two `subPath` values, or use an `emptyDir` for one workspace."
+        explanation: "Correct. The controller allows only one PersistentVolumeClaim per `TaskRun`."
+    correct_option: d
+    explanation: "Correct. The controller allows only one PersistentVolumeClaim per `TaskRun`."
+
+  - id: ats125-final-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the end states of steps after a failure"
+    source_readings:
+      - sections/section-030/module-01/course-01-taskrun-lifecycle-and-step-states.md
+    prompt: "In a `Task` with three steps, the second step exits with code 3. What do `status.steps` and the `TaskRun` show?"
+    options:
+      - id: a
+        text: "The second step is `Error`, the third is `Completed`, and the run is `Succeeded`."
+        explanation: "Not correct. A failed step skips the steps after it."
+      - id: b
+        text: "The second step is `Continued` and the third is `Completed`."
+        explanation: "Not correct. `Continued` needs `onError: continue`."
+      - id: c
+        text: "The second step is `Error`, the third is `Skipped`, and the run has the reason `StepFailed`."
+        explanation: "Correct. Only the first failed step holds the real error."
+      - id: d
+        text: "All three steps are `Error` and the reason is `TaskRunTimeout`."
+        explanation: "Not correct. The first step ended with `Completed`, and no timeout happened."
+    correct_option: c
+    explanation: "Correct. Only the first failed step holds the real error."
+
+  - id: ats125-final-q08
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain onError continue"
+    source_readings:
+      - sections/section-030/module-01/course-02-onerror-and-exit-codes.md
+    prompt: "What does `onError: continue` do on a step that exits with a non-zero code?"
+    options:
+      - id: a
+        text: "The step is retried until it exits with 0."
+        explanation: "Not correct. `onError` does not retry. `spec.retries` retries a whole run."
+      - id: b
+        text: "The step shows `Continued` with its real exit code, and the next step starts."
+        explanation: "Correct. The failure stays in `status.steps`."
+      - id: c
+        text: "The exit code is changed to 0 in `status.steps`."
+        explanation: "Not correct. The real exit code is kept."
+      - id: d
+        text: "The remaining steps are skipped and the run is `Succeeded`."
+        explanation: "Not correct. The next step runs as if the step had passed."
+    correct_option: b
+    explanation: "Correct. The failure stays in `status.steps`."
+
+  - id: ats125-final-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Share storage between a build step and a push step"
+    source_readings:
+      - sections/section-030/module-01/course-03-build-and-push-an-image.md
+    prompt: "The build and push steps are separate steps. What must they share, and why?"
+    options:
+      - id: a
+        text: "A volume mounted at `/var/lib/containers`, because Buildah keeps its images there and the folder is private to each container."
+        explanation: "Correct. Without it, the push step does not know the image."
+      - id: b
+        text: "The `source` workspace only, because Buildah keeps images in `/workspace`."
+        explanation: "Not correct. Buildah keeps images in `/var/lib/containers`."
+      - id: c
+        text: "Nothing, because the steps run in one container."
+        explanation: "Not correct. Each step is its own container."
+      - id: d
+        text: "A Secret with the registry credentials."
+        explanation: "Not correct. The registry in the lab needs no login, and a Secret does not carry images."
+    correct_option: a
+    explanation: "Correct. Without it, the push step does not know the image."

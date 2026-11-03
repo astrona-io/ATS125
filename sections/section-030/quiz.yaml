@@ -1,0 +1,244 @@
+schema_version: 1
+kind: question_bank
+id: ats125-030
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-030
+  title: "Step Lifecycle And A Container Build Task"
+placement:
+  position: after
+  reading: sections/section-030/capstone/labs/lab-01/question.md
+questions:
+  - id: ats125-030-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read the Succeeded condition of a running TaskRun"
+    source_readings:
+      - sections/section-030/module-01/course-01-taskrun-lifecycle-and-step-states.md
+    prompt: "A `TaskRun` is still running. What is the `status` of its `Succeeded` condition?"
+    options:
+      - id: a
+        text: "`False`, with the reason `Running`."
+        explanation: "Not correct. `False` means the run failed."
+      - id: b
+        text: "`True`, with the reason `Running`."
+        explanation: "Not correct. `True` means the run succeeded."
+      - id: c
+        text: "`Unknown`. It becomes `True` or `False` when the run ends."
+        explanation: "Correct. `Unknown` means the run has not ended."
+      - id: d
+        text: "The condition does not exist until the pod ends."
+        explanation: "Not correct. The controller sets it when it first sees the run."
+    correct_option: c
+    explanation: "Correct. `Unknown` means the run has not ended."
+
+  - id: ats125-030-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the end states of steps after a failure"
+    source_readings:
+      - sections/section-030/module-01/course-01-taskrun-lifecycle-and-step-states.md
+    prompt: "In a `Task` with three steps, the second step exits with code 3. What do `status.steps` and the `TaskRun` show?"
+    options:
+      - id: a
+        text: "The second step is `Error`, the third is `Completed`, and the run is `Succeeded`."
+        explanation: "Not correct. A failed step skips the steps after it."
+      - id: b
+        text: "The second step is `Continued` and the third is `Completed`."
+        explanation: "Not correct. `Continued` needs `onError: continue`."
+      - id: c
+        text: "All three steps are `Error` and the reason is `TaskRunTimeout`."
+        explanation: "Not correct. The first step ended with `Completed`, and no timeout happened."
+      - id: d
+        text: "The second step is `Error`, the third is `Skipped`, and the run has the reason `StepFailed`."
+        explanation: "Correct. Only the first failed step holds the real error."
+    correct_option: d
+    explanation: "Correct. Only the first failed step holds the real error."
+
+  - id: ats125-030-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Tell a step timeout from a run timeout"
+    source_readings:
+      - sections/section-030/module-01/course-01-taskrun-lifecycle-and-step-states.md
+    prompt: "A step has `timeout: 5s` and runs for 20 seconds. What do you see?"
+    options:
+      - id: a
+        text: "The run has the reason `StepFailed`, the step shows `TimeoutExceeded`, and the pod and its logs are still there."
+        explanation: "Correct. The entrypoint binary inside the container stops the step."
+      - id: b
+        text: "The run has the reason `TaskRunTimeout` and the pod is deleted."
+        explanation: "Not correct. That is what a `spec.timeout` of the whole run does."
+      - id: c
+        text: "The step shows `Continued` and the run succeeds."
+        explanation: "Not correct. A step timeout fails the run even with `onError: continue`."
+      - id: d
+        text: "The step shows `Cancelled` and the run has the reason `TaskRunCancelled`."
+        explanation: "Not correct. `Cancelled` is for a cancelled run."
+    correct_option: a
+    explanation: "Correct. The entrypoint binary inside the container stops the step."
+
+  - id: ats125-030-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know what a run timeout deletes"
+    source_readings:
+      - sections/section-030/module-01/course-01-taskrun-lifecycle-and-step-states.md
+    prompt: "A `TaskRun` passes its `spec.timeout`. What does the tekton-pipelines-controller do?"
+    options:
+      - id: a
+        text: "It sets the reason `StepFailed` and keeps the pod."
+        explanation: "Not correct. That happens for a step timeout."
+      - id: b
+        text: "It sets the reason `TaskRunTimeout` and deletes the pod, so the step logs are gone."
+        explanation: "Correct. Use a step `timeout` when you want to keep the logs."
+      - id: c
+        text: "It lets the current step finish and then stops."
+        explanation: "Not correct. It deletes the pod at once."
+      - id: d
+        text: "It retries the run until `spec.timeout` is reset."
+        explanation: "Not correct. Only `spec.retries` makes Tekton try again."
+    correct_option: b
+    explanation: "Correct. Use a step `timeout` when you want to keep the logs."
+
+  - id: ats125-030-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain onError continue"
+    source_readings:
+      - sections/section-030/module-01/course-02-onerror-and-exit-codes.md
+    prompt: "What does `onError: continue` do on a step that exits with a non-zero code?"
+    options:
+      - id: a
+        text: "The step is retried until it exits with 0."
+        explanation: "Not correct. `onError` does not retry. `spec.retries` retries a whole run."
+      - id: b
+        text: "The exit code is changed to 0 in `status.steps`."
+        explanation: "Not correct. The real exit code is kept."
+      - id: c
+        text: "The step shows `Continued` with its real exit code, and the next step starts."
+        explanation: "Correct. The failure stays in `status.steps`."
+      - id: d
+        text: "The remaining steps are skipped and the run is `Succeeded`."
+        explanation: "Not correct. The next step runs as if the step had passed."
+    correct_option: c
+    explanation: "Correct. The failure stays in `status.steps`."
+
+  - id: ats125-030-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the exit code of an earlier step"
+    source_readings:
+      - sections/section-030/module-01/course-02-onerror-and-exit-codes.md
+    prompt: "A step is named `test`. Which variable gives the path of the file with its exit code?"
+    options:
+      - id: a
+        text: "`$(steps.test.exitCode.path)`"
+        explanation: "Not correct. The `step-` prefix is missing."
+      - id: b
+        text: "`$(step.results.test.path)`"
+        explanation: "Not correct. That is the path of a step result."
+      - id: c
+        text: "`$(results.test.exitCode.path)`"
+        explanation: "Not correct. That variable does not exist."
+      - id: d
+        text: "`$(steps.step-test.exitCode.path)`"
+        explanation: "Correct. The variable uses the name of the step container, with `step-` in front."
+    correct_option: d
+    explanation: "Correct. The variable uses the name of the step container, with `step-` in front."
+
+  - id: ats125-030-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe the exit handler pattern"
+    source_readings:
+      - sections/section-030/module-01/course-02-onerror-and-exit-codes.md
+    prompt: "Tekton has no exit-handler field on a `Task`. How does the course make a final step decide the outcome?"
+    options:
+      - id: a
+        text: "Earlier steps use `onError: continue`, and the last step reads their exit code files and exits non-zero when one failed."
+        explanation: "Correct. The run then ends `False` with `StepFailed`."
+      - id: b
+        text: "The `finally` field of the `Task` lists steps that always run."
+        explanation: "Not correct. `finally` belongs to a `Pipeline`."
+      - id: c
+        text: "The last step sets `onError: stopAndFail`, which reads the earlier exit codes."
+        explanation: "Not correct. `stopAndFail` is the default and reads nothing."
+      - id: d
+        text: "A `TaskRun` field `spec.exitHandler` names the last step."
+        explanation: "Not correct. That field does not exist."
+    correct_option: a
+    explanation: "Correct. The run then ends `False` with `StepFailed`."
+
+  - id: ats125-030-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain the Buildah storage driver"
+    source_readings:
+      - sections/section-030/module-01/course-03-build-and-push-an-image.md
+    prompt: "Why does the build step use `buildah --storage-driver=vfs`?"
+    options:
+      - id: a
+        text: "`vfs` is the only driver that can push to a registry."
+        explanation: "Not correct. The driver does not affect the push."
+      - id: b
+        text: "The default `overlay` driver with `fuse-overlayfs` needs `/dev/fuse`, which a normal pod does not have."
+        explanation: "Correct. The `vfs` driver copies files and needs no device."
+      - id: c
+        text: "`vfs` makes the build faster than `overlay`."
+        explanation: "Not correct. `vfs` copies files and is slower."
+      - id: d
+        text: "Tekton requires `vfs` for every build tool."
+        explanation: "Not correct. It is a Buildah setting for this pod limit."
+    correct_option: b
+    explanation: "Correct. The `vfs` driver copies files and needs no device."
+
+  - id: ats125-030-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Share storage between a build step and a push step"
+    source_readings:
+      - sections/section-030/module-01/course-03-build-and-push-an-image.md
+    prompt: "The build and push steps are separate steps. What must they share, and why?"
+    options:
+      - id: a
+        text: "The `source` workspace only, because Buildah keeps images in `/workspace`."
+        explanation: "Not correct. Buildah keeps images in `/var/lib/containers`."
+      - id: b
+        text: "Nothing, because the steps run in one container."
+        explanation: "Not correct. Each step is its own container."
+      - id: c
+        text: "A volume mounted at `/var/lib/containers`, because Buildah keeps its images there and the folder is private to each container."
+        explanation: "Correct. Without it, the push step does not know the image."
+      - id: d
+        text: "A Secret with the registry credentials."
+        explanation: "Not correct. The registry in the lab needs no login, and a Secret does not carry images."
+    correct_option: c
+    explanation: "Correct. Without it, the push step does not know the image."
+
+  - id: ats125-030-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Prove the pushed digest"
+    source_readings:
+      - sections/section-030/module-01/course-03-build-and-push-an-image.md
+    prompt: "How do you prove that the digest in `IMAGE_DIGEST` is the one the registry serves?"
+    options:
+      - id: a
+        text: "Compare the tag in `IMAGE_URL` with the tag list of the registry."
+        explanation: "Not correct. A tag can point to another image later."
+      - id: b
+        text: "Read the `build` step log and look for the word `pushed`."
+        explanation: "Not correct. A log line is not proof, and a result is a claim."
+      - id: c
+        text: "Send the `HEAD` request without an `Accept` header."
+        explanation: "Not correct. The registry then answers `MANIFEST_UNKNOWN` for an OCI manifest."
+      - id: d
+        text: "Send a `HEAD` request for the manifest with an OCI `Accept` header, and compare `Docker-Content-Digest` with the result."
+        explanation: "Correct. Digest values do not change, and tags can move."
+    correct_option: d
+    explanation: "Correct. Digest values do not change, and tags can move."

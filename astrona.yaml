@@ -131,6 +131,10 @@ modules:
             url: https://tekton.dev/docs/pipelines/stepactions/
           - name: "Container contract"
             url: https://tekton.dev/docs/pipelines/container-contract/
+      - type: quiz
+        title: "Knowledge Check: Write Tasks With Steps, Parameters And Results"
+        path: sections/section-010/quiz.yaml
+        pass_score: 70
 
   - id: module-020
     title: "Share Data With Workspaces"
@@ -201,6 +205,10 @@ modules:
             url: https://tekton.dev/docs/pipelines/workspaces/
           - name: "Additional configuration options"
             url: https://tekton.dev/docs/pipelines/additional-configs/
+      - type: quiz
+        title: "Knowledge Check: Share Data With Workspaces"
+        path: sections/section-020/quiz.yaml
+        pass_score: 70
 
   - id: module-030
     title: "Step Lifecycle And A Container Build Task"
@@ -276,3 +284,11 @@ modules:
             url: https://tekton.dev/docs/pipelines/taskruns/
           - name: "Variable substitutions"
             url: https://tekton.dev/docs/pipelines/variables/
+      - type: quiz
+        title: "Knowledge Check: Step Lifecycle And A Container Build Task"
+        path: sections/section-030/quiz.yaml
+        pass_score: 70
+      - type: quiz
+        title: "Final Domain Quiz"
+        path: sections/final-domain-quiz.yaml
+        pass_score: 70

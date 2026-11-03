@@ -1,0 +1,244 @@
+schema_version: 1
+kind: question_bank
+id: ats125-020
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-020
+  title: "Share Data With Workspaces"
+placement:
+  position: after
+  reading: sections/section-020/capstone/labs/lab-01/question.md
+questions:
+  - id: ats125-020-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain the split between a Task and a TaskRun for workspaces"
+    source_readings:
+      - sections/section-020/module-01/course-01-declare-workspaces-and-bind-emptydir.md
+    prompt: "Who chooses the storage behind a workspace?"
+    options:
+      - id: a
+        text: "The `Task` author fixes the volume in `spec.workspaces`."
+        explanation: "Not correct. A declaration has no volume. It only names the folder."
+      - id: b
+        text: "The `Task` declares the workspace, and the `TaskRun` binds it to a volume."
+        explanation: "Correct. The same `Task` can then run with an `emptyDir` or with a PersistentVolumeClaim."
+      - id: c
+        text: "The tekton-pipelines-controller picks a volume when the pod starts."
+        explanation: "Not correct. The controller uses the binding of the `TaskRun`."
+      - id: d
+        text: "The cluster administrator sets one volume type for every workspace."
+        explanation: "Not correct. Each `TaskRun` chooses its own binding."
+    correct_option: b
+    explanation: "Correct. The same `Task` can then run with an `emptyDir` or with a PersistentVolumeClaim."
+
+  - id: ats125-020-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know what happens with an unbound workspace"
+    source_readings:
+      - sections/section-020/module-01/course-01-declare-workspaces-and-bind-emptydir.md
+    prompt: "A `TaskRun` does not bind a workspace that the `Task` declares without `optional`. What happens?"
+    options:
+      - id: a
+        text: "The step runs and `$(workspaces.<name>.path)` is empty."
+        explanation: "Not correct. Only an optional workspace gives an empty path."
+      - id: b
+        text: "Tekton binds an `emptyDir` on its own."
+        explanation: "Not correct. A default binding exists only if the `config-defaults` ConfigMap sets one."
+      - id: c
+        text: "The run fails with `TaskRunValidationFailed` before a pod exists."
+        explanation: "Correct. The message says the declared workspace is required but has not been bound."
+      - id: d
+        text: "The pod starts and the first step is `Skipped`."
+        explanation: "Not correct. The check fails before the pod is created."
+    correct_option: c
+    explanation: "Correct. The message says the declared workspace is required but has not been bound."
+
+  - id: ats125-020-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know the lifetime of an emptyDir workspace"
+    source_readings:
+      - sections/section-020/module-01/course-01-declare-workspaces-and-bind-emptydir.md
+    prompt: "How long do the files in an `emptyDir` workspace live?"
+    options:
+      - id: a
+        text: "Until the PersistentVolumeClaim is deleted."
+        explanation: "Not correct. An `emptyDir` has no PersistentVolumeClaim."
+      - id: b
+        text: "Until the next `TaskRun` of the same `Task` starts."
+        explanation: "Not correct. Runs never share an `emptyDir`."
+      - id: c
+        text: "Until the `Task` is deleted."
+        explanation: "Not correct. The `Task` does not own the data."
+      - id: d
+        text: "Until the pod of the `TaskRun` is deleted."
+        explanation: "Correct. Kubernetes deletes the `emptyDir` with the pod."
+    correct_option: d
+    explanation: "Correct. Kubernetes deletes the `emptyDir` with the pod."
+
+  - id: ats125-020-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain volumeClaimTemplate"
+    source_readings:
+      - sections/section-020/module-01/course-03-persistent-workspaces-with-pvcs.md
+    prompt: "What does a `volumeClaimTemplate` binding do?"
+    options:
+      - id: a
+        text: "Tekton creates a new PersistentVolumeClaim for each `TaskRun`, owned by that `TaskRun`."
+        explanation: "Correct. The claim is deleted when the `TaskRun` is deleted."
+      - id: b
+        text: "It binds an existing claim by name."
+        explanation: "Not correct. That is `persistentVolumeClaim` with `claimName`."
+      - id: c
+        text: "It creates one claim that all runs of the `Task` share."
+        explanation: "Not correct. Each run gets its own claim."
+      - id: d
+        text: "It mounts a ConfigMap as read-only files."
+        explanation: "Not correct. That is a `configMap` binding."
+    correct_option: a
+    explanation: "Correct. The claim is deleted when the `TaskRun` is deleted."
+
+  - id: ats125-020-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Use the right field for a Secret binding"
+    source_readings:
+      - sections/section-020/module-01/course-02-configmap-and-secret-workspaces.md
+    prompt: "Which field names the Secret in a workspace binding?"
+    options:
+      - id: a
+        text: "`name`."
+        explanation: "Not correct. `name` is the field of a ConfigMap binding."
+      - id: b
+        text: "`secretName`."
+        explanation: "Correct. A ConfigMap binding uses `name`, and a Secret binding uses `secretName`."
+      - id: c
+        text: "`claimName`."
+        explanation: "Not correct. `claimName` is for a PersistentVolumeClaim."
+      - id: d
+        text: "`secretRef`."
+        explanation: "Not correct. That field does not exist in a workspace binding."
+    correct_option: b
+    explanation: "Correct. A ConfigMap binding uses `name`, and a Secret binding uses `secretName`."
+
+  - id: ats125-020-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know that ConfigMap workspaces are read-only"
+    source_readings:
+      - sections/section-020/module-01/course-02-configmap-and-secret-workspaces.md
+    prompt: "A step writes a file into a workspace that is bound to a ConfigMap. What happens?"
+    options:
+      - id: a
+        text: "The write succeeds and the ConfigMap is updated."
+        explanation: "Not correct. A step cannot change a ConfigMap through a volume."
+      - id: b
+        text: "The write succeeds, but only for the first step."
+        explanation: "Not correct. The mount is read-only in every step."
+      - id: c
+        text: "The write fails, because a ConfigMap or Secret volume is always read-only."
+        explanation: "Correct. Write to a separate, writable workspace."
+      - id: d
+        text: "The write succeeds only if `readOnly: false` is set."
+        explanation: "Not correct. Kubernetes mounts these volumes read-only whatever the setting is."
+    correct_option: c
+    explanation: "Correct. Write to a separate, writable workspace."
+
+  - id: ats125-020-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Handle an optional workspace in a script"
+    source_readings:
+      - sections/section-020/module-01/course-02-configmap-and-secret-workspaces.md
+    prompt: "A `TaskRun` leaves out an `optional` workspace. What do the steps see?"
+    options:
+      - id: a
+        text: "`bound` is `true` and the path points at an empty folder."
+        explanation: "Not correct. Nothing is mounted for an unbound workspace."
+      - id: b
+        text: "The path is `/workspace/<name>`, with no files in it."
+        explanation: "Not correct. The path is empty."
+      - id: c
+        text: "The run fails with `TaskRunValidationFailed`."
+        explanation: "Not correct. An optional workspace may stay unbound."
+      - id: d
+        text: "`$(workspaces.<name>.bound)` is `false` and the path is an empty string."
+        explanation: "Correct. A script must check `bound` before it uses the path."
+    correct_option: d
+    explanation: "Correct. A script must check `bound` before it uses the path."
+
+  - id: ats125-020-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Limit a Secret to one step"
+    source_readings:
+      - sections/section-020/module-01/course-02-configmap-and-secret-workspaces.md
+    prompt: "How do you mount a Secret workspace into only one step?"
+    options:
+      - id: a
+        text: "List the workspace under `workspaces` of that step, which makes it an isolated workspace."
+        explanation: "Correct. Only steps that list it mount it."
+      - id: b
+        text: "Set `readOnly: true` in the declaration."
+        explanation: "Not correct. `readOnly` changes the mode and does not limit the steps."
+      - id: c
+        text: "Set `optional: true` in the declaration."
+        explanation: "Not correct. `optional` lets the run leave the workspace out."
+      - id: d
+        text: "Bind the Secret with `subPath` set to the step name."
+        explanation: "Not correct. `subPath` picks a folder of a volume and does not pick steps."
+    correct_option: a
+    explanation: "Correct. Only steps that list it mount it."
+
+  - id: ats125-020-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict the effect of a wrong subPath"
+    source_readings:
+      - sections/section-020/module-01/course-03-persistent-workspaces-with-pvcs.md
+    prompt: "A `TaskRun` binds a PersistentVolumeClaim with `subPath: shuttel`, a typing error. The folder does not exist. What happens?"
+    options:
+      - id: a
+        text: "The run fails with `TaskRunValidationFailed`."
+        explanation: "Not correct. Tekton does not check that the folder exists."
+      - id: b
+        text: "The kubelet creates the folder, and the run succeeds on an empty folder."
+        explanation: "Correct. Check `subPath` when results look too small."
+      - id: c
+        text: "The pod waits with `CreateContainerConfigError`."
+        explanation: "Not correct. That error is for a missing ConfigMap or Secret key."
+      - id: d
+        text: "Tekton falls back to the root of the volume."
+        explanation: "Not correct. The mount goes to the new, empty folder."
+    correct_option: b
+    explanation: "Correct. Check `subPath` when results look too small."
+
+  - id: ats125-020-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Stay inside the one-PVC rule"
+    source_readings:
+      - sections/section-020/module-01/course-03-persistent-workspaces-with-pvcs.md
+    prompt: "With the default `coschedule: workspaces`, a `TaskRun` binds two different PersistentVolumeClaims. What happens, and what is a clean fix?"
+    options:
+      - id: a
+        text: "The run succeeds, because each workspace has its own volume."
+        explanation: "Not correct. The default `coschedule` setting refuses it."
+      - id: b
+        text: "The run fails only if the claims use `ReadWriteOnce`."
+        explanation: "Not correct. The access mode does not matter for this check."
+      - id: c
+        text: "The run fails with `TaskRunValidationFailed`. Bind one claim with two `subPath` values, or use an `emptyDir` for one workspace."
+        explanation: "Correct. The controller allows only one PersistentVolumeClaim per `TaskRun`."
+      - id: d
+        text: "The run fails. Set `coschedule` to another value in that `Task`."
+        explanation: "Not correct. `coschedule` is a cluster-wide setting of an administrator."
+    correct_option: c
+    explanation: "Correct. The controller allows only one PersistentVolumeClaim per `TaskRun`."
