@@ -1,0 +1,28 @@
+# The StepAction the learner must use. It composes "<prefix>: <message>" and
+# returns it as the step result "line".
+apiVersion: tekton.dev/v1beta1
+kind: StepAction
+metadata:
+  name: compose-line
+  namespace: starfleet
+spec:
+  description: Composes a log line from a prefix and a message.
+  params:
+    - name: prefix
+      type: string
+      default: "log"
+    - name: message
+      type: string
+  results:
+    - name: line
+      description: The finished log line
+  env:
+    - name: PREFIX
+      value: $(params.prefix)
+    - name: MESSAGE
+      value: $(params.message)
+  image: busybox:1.37.0
+  script: |
+    #!/bin/sh
+    set -eu
+    printf '%s: %s' "$PREFIX" "$MESSAGE" | tee "$(step.results.line.path)"

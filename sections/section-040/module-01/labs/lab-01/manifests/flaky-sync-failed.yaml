@@ -1,0 +1,8 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: flaky-sync-failed
+  namespace: starfleet
+spec:
+  taskRef:
+    name: flaky-sync

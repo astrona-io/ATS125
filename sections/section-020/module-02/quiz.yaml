@@ -1,0 +1,237 @@
+# Knowledge check for section-020/module-02. Contract: schemas/question-bank.schema.json.
+# Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats125-020-02
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-020/module-02
+  title: "Volumes And Sidecars In A Task"
+placement:
+  position: after
+  reading: sections/section-020/module-02/course-05-summary.md
+questions:
+- id: ats125-020-02-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Know that /tmp is not shared"
+  source_readings:
+  - sections/section-020/module-02/course-01-task-volumes-and-volumemounts.md
+  prompt: "Step one writes `/tmp/a.txt`. Can step two read it?"
+  options:
+  - id: a
+    text: "No. Each step has its own file system outside shared volumes."
+    explanation: "Correct. Use `/workspace` or a volume."
+  - id: b
+    text: "Yes, `/tmp` is shared by the pod."
+    explanation: "Not correct. Only mounted volumes and `/workspace` are shared."
+  - id: c
+    text: "Yes, but only if both steps use the same image."
+    explanation: "Not correct. The image does not matter."
+  - id: d
+    text: "Yes, after `sync` runs."
+    explanation: "Not correct. There is no such step."
+  correct_option: a
+  explanation: "Correct. Use `/workspace` or a volume."
+- id: ats125-020-02-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Declare and mount a volume"
+  source_readings:
+  - sections/section-020/module-02/course-01-task-volumes-and-volumemounts.md
+  prompt: "How does a Task give a step a volume?"
+  options:
+  - id: a
+    text: "It lists the volume in `params`."
+    explanation: "Not correct. Parameters are values."
+  - id: b
+    text: "It declares the volume in `volumes` and mounts it in the step with `volumeMounts`."
+    explanation: "Correct. Both a declaration and a mount are needed."
+  - id: c
+    text: "It only declares the volume in `volumes`."
+    explanation: "Not correct. A step must also mount it."
+  - id: d
+    text: "It binds the volume in the `TaskRun`."
+    explanation: "Not correct. That describes a workspace."
+  correct_option: b
+  explanation: "Correct. Both a declaration and a mount are needed."
+- id: ats125-020-02-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know the effect of a mount path"
+  source_readings:
+  - sections/section-020/module-02/course-01-task-volumes-and-volumemounts.md
+  prompt: "A volume is mounted at a path where the image has files. What happens to those files?"
+  options:
+  - id: a
+    text: "They are copied into the volume."
+    explanation: "Not correct. A mount does not copy files."
+  - id: b
+    text: "They are deleted from the image."
+    explanation: "Not correct. The image is not changed."
+  - id: c
+    text: "They are hidden while the volume is mounted."
+    explanation: "Correct. The volume hides the image files at that path."
+  - id: d
+    text: "The mount fails."
+    explanation: "Not correct. Mounting over a folder works."
+  correct_option: c
+  explanation: "Correct. The volume hides the image files at that path."
+- id: ats125-020-02-q04
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Compare a volume with a workspace"
+  source_readings:
+  - sections/section-020/module-02/course-02-workspaces-compared-with-volumes.md
+  prompt: "Who decides which volume a workspace uses?"
+  options:
+  - id: a
+    text: "The Task, in its `volumes` list."
+    explanation: "Not correct. That describes a volume."
+  - id: b
+    text: "The image of the step."
+    explanation: "Not correct. The image has no say."
+  - id: c
+    text: "The sidecar."
+    explanation: "Not correct. A sidecar does not bind storage."
+  - id: d
+    text: "The `TaskRun` binds it when it starts."
+    explanation: "Correct. A workspace is a name that the `TaskRun` binds."
+  correct_option: d
+  explanation: "Correct. A workspace is a name that the `TaskRun` binds."
+- id: ats125-020-02-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Check an optional workspace"
+  source_readings:
+  - sections/section-020/module-02/course-02-workspaces-compared-with-volumes.md
+  prompt: "Which variable tells a script whether an optional workspace is bound?"
+  options:
+  - id: a
+    text: "`$(workspaces.<name>.bound)`"
+    explanation: "Correct. The value is `true` or `false`."
+  - id: b
+    text: "`$(workspaces.<name>.path)`"
+    explanation: "Not correct. The path is given even if the workspace is not bound."
+  - id: c
+    text: "`$(workspaces.<name>.claim)`"
+    explanation: "Not correct. This is the claim name."
+  - id: d
+    text: "`$(workspaces.<name>.volume)`"
+    explanation: "Not correct. This is the volume name."
+  correct_option: a
+  explanation: "Correct. The value is `true` or `false`."
+- id: ats125-020-02-q06
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Name the sidecar container"
+  source_readings:
+  - sections/section-020/module-02/course-03-sidecars-in-a-task.md
+  prompt: "A Task has a sidecar named `db`. What is the name of its container in the pod?"
+  options:
+  - id: a
+    text: "`step-db`"
+    explanation: "Not correct. Steps use the prefix `step-`."
+  - id: b
+    text: "`sidecar-db`"
+    explanation: "Correct. Containers are named `step-<name>` and `sidecar-<name>`."
+  - id: c
+    text: "`db-sidecar`"
+    explanation: "Not correct. The prefix comes first."
+  - id: d
+    text: "`db`"
+    explanation: "Not correct. Tekton adds a prefix."
+  correct_option: b
+  explanation: "Correct. Containers are named `step-<name>` and `sidecar-<name>`."
+- id: ats125-020-02-q07
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Reach a sidecar from a step"
+  source_readings:
+  - sections/section-020/module-02/course-03-sidecars-in-a-task.md
+  prompt: "How does a step reach a web server that runs in a sidecar on port 8080?"
+  options:
+  - id: a
+    text: "By a Service name."
+    explanation: "Not correct. A Service is not needed inside a pod."
+  - id: b
+    text: "By the container name as host name."
+    explanation: "Not correct. Container names are not host names."
+  - id: c
+    text: "At `127.0.0.1:8080` or `localhost:8080`, because the containers share the pod network."
+    explanation: "Correct. All containers of a pod share one network."
+  - id: d
+    text: "It cannot, because a sidecar is isolated."
+    explanation: "Not correct. Containers in a pod share the network."
+  correct_option: c
+  explanation: "Correct. All containers of a pod share one network."
+- id: ats125-020-02-q08
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know how a sidecar ends"
+  source_readings:
+  - sections/section-020/module-02/course-04-sidecar-lifecycle-and-readiness.md
+  prompt: "What does the controller do to a sidecar when the last step ends?"
+  options:
+  - id: a
+    text: "It sends a signal to the sidecar."
+    explanation: "Not correct. The controller replaces the image."
+  - id: b
+    text: "It deletes the pod at once."
+    explanation: "Not correct. The pod must report the result first."
+  - id: c
+    text: "Nothing. The pod waits for the sidecar."
+    explanation: "Not correct. That would make the run hang."
+  - id: d
+    text: "It replaces the image with the `nop` image so that the container ends."
+    explanation: "Correct. The `nop` image ends the container."
+  correct_option: d
+  explanation: "Correct. The `nop` image ends the container."
+- id: ats125-020-02-q09
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know that steps do not wait for sidecars"
+  source_readings:
+  - sections/section-020/module-02/course-04-sidecar-lifecycle-and-readiness.md
+  prompt: "A step calls the sidecar at once and gets a connection error. What is the portable fix?"
+  options:
+  - id: a
+    text: "Retry the call in the step until the sidecar answers."
+    explanation: "Correct. Steps do not wait for sidecars by default."
+  - id: b
+    text: "Put the sidecar after the step."
+    explanation: "Not correct. A sidecar starts with the pod."
+  - id: c
+    text: "Set `timeout: 0` on the step."
+    explanation: "Not correct. A timeout does not wait for a sidecar."
+  - id: d
+    text: "Use `onError: continue`."
+    explanation: "Not correct. The step would still fail the call."
+  correct_option: a
+  explanation: "Correct. Steps do not wait for sidecars by default."
+- id: ats125-020-02-q10
+  type: single_choice
+  difficulty: advanced
+  learning_objective: "Know the native sidecar setting"
+  source_readings:
+  - sections/section-020/module-02/course-04-sidecar-lifecycle-and-readiness.md
+  prompt: "What is the default of the setting `enable-kubernetes-sidecar`?"
+  options:
+  - id: a
+    text: "It is on."
+    explanation: "Not correct. It is off until you enable it."
+  - id: b
+    text: "It is off."
+    explanation: "Correct. When on, Tekton uses native sidecars with startup probes."
+  - id: c
+    text: "It is on only for tasks with one sidecar."
+    explanation: "Not correct. There is no such rule."
+  - id: d
+    text: "It is on only in `kind` clusters."
+    explanation: "Not correct. The setting does not depend on the cluster type."
+  correct_option: b
+  explanation: "Correct. When on, Tekton uses native sidecars with startup probes."

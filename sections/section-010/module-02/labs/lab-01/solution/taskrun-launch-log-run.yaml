@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: launch-log-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: launch-log
+  params:
+    - name: message
+      value: engines online

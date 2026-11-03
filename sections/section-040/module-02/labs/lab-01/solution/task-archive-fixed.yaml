@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: archive-fixed
+  namespace: starfleet
+spec:
+  results:
+    - name: size
+  steps:
+    - name: collect
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        printf 'orbit report' > /workspace/report.txt
+        echo "report collected"
+    - name: pack
+      image: busybox:1.37.0
+      script: |
+        #!/bin/sh
+        set -eu
+        if [ ! -f /workspace/report.txt ]; then
+          echo "report missing"
+          exit 3
+        fi
+        wc -c < /workspace/report.txt | tr -d ' \n' > "$(results.size.path)"
+        echo "report packed"

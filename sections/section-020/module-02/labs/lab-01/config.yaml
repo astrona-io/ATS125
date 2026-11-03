@@ -1,0 +1,52 @@
+# Write A Task With A Sidecar And A Shared Volume
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-125-lab-020-02"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The fix a correct learner makes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-task-status-reader"
+      description: "Confirms the Task status-reader has a sidecar, an emptyDir volume mounted in the sidecar and a step, and the result body"
+      type: "file"
+      source: "validation/validate-task-status-reader.sh"
+    - name: "validate-status-reader-run"
+      description: "Confirms status-reader-run uses the Task, succeeded and reports the default body"
+      type: "file"
+      source: "validation/validate-status-reader-run.sh"
+    - name: "validate-grader-status-reader"
+      description: "Runs a grader TaskRun with its own message and checks the body"
+      type: "file"
+      source: "validation/validate-grader-status-reader.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

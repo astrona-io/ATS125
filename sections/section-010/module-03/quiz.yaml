@@ -1,0 +1,237 @@
+# Knowledge check for section-010/module-03. Contract: schemas/question-bank.schema.json.
+# Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats125-010-03
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-010/module-03
+  title: "Object Parameters, Array Results And Context"
+placement:
+  position: after
+  reading: sections/section-010/module-03/course-05-summary.md
+questions:
+- id: ats125-010-03-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Declare an object parameter"
+  source_readings:
+  - sections/section-010/module-03/course-01-object-parameters-and-their-properties.md
+  prompt: "How do you declare a parameter with named keys?"
+  options:
+  - id: a
+    text: "With `type: object` and a list of `properties`."
+    explanation: "Correct. An object parameter lists its keys in `properties`."
+  - id: b
+    text: "With `type: map` and a list of `keys`."
+    explanation: "Not correct. Tekton has no `map` type."
+  - id: c
+    text: "With `type: string` and a JSON default."
+    explanation: "Not correct. A string stays one string."
+  - id: d
+    text: "With `type: array` and key names as items."
+    explanation: "Not correct. An array has positions, not keys."
+  correct_option: a
+  explanation: "Correct. An object parameter lists its keys in `properties`."
+- id: ats125-010-03-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Know the type of object values"
+  source_readings:
+  - sections/section-010/module-03/course-01-object-parameters-and-their-properties.md
+  prompt: "What is the type of the value of every key in an object parameter?"
+  options:
+  - id: a
+    text: "Any type, set per key."
+    explanation: "Not correct. Each `properties` entry can only be a string."
+  - id: b
+    text: "String."
+    explanation: "Correct. Object keys hold strings."
+  - id: c
+    text: "Number or string."
+    explanation: "Not correct. Only strings are allowed."
+  - id: d
+    text: "Array."
+    explanation: "Not correct. Values are single strings."
+  correct_option: b
+  explanation: "Correct. Object keys hold strings."
+- id: ats125-010-03-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Read one key"
+  source_readings:
+  - sections/section-010/module-03/course-01-object-parameters-and-their-properties.md
+  prompt: "The object parameter `ship` has the key `name`. How do you read the key?"
+  options:
+  - id: a
+    text: "`$(params.ship[name])`"
+    explanation: "Not correct. This form does not exist for objects."
+  - id: b
+    text: "`$(params.ship->name)`"
+    explanation: "Not correct. This is not a variable form."
+  - id: c
+    text: "`$(params.ship.name)`"
+    explanation: "Correct. A key is read with a dot after the parameter name."
+  - id: d
+    text: "`$(ship.name)`"
+    explanation: "Not correct. Parameters are always under `params`."
+  correct_option: c
+  explanation: "Correct. A key is read with a dot after the parameter name."
+- id: ats125-010-03-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know what a missing key does"
+  source_readings:
+  - sections/section-010/module-03/course-01-object-parameters-and-their-properties.md
+  prompt: "A required key of an object parameter has no value and no default. When does the failure show?"
+  options:
+  - id: a
+    text: "The step runs with an empty value."
+    explanation: "Not correct. The key is required."
+  - id: b
+    text: "After the first step ends."
+    explanation: "Not correct. The check is done before any pod."
+  - id: c
+    text: "The webhook rejects the `TaskRun` only when you apply it a second time."
+    explanation: "Not correct. The run fails once, on the first try."
+  - id: d
+    text: "The run fails before a pod exists."
+    explanation: "Correct. A key without a value fails the run early."
+  correct_option: d
+  explanation: "Correct. A key without a value fails the run early."
+- id: ats125-010-03-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Write an array result"
+  source_readings:
+  - sections/section-010/module-03/course-02-array-and-object-results.md
+  prompt: "How does a step set an array result?"
+  options:
+  - id: a
+    text: "It writes a valid JSON array into the result file."
+    explanation: "Correct. Array and object results are JSON in the result file."
+  - id: b
+    text: "It writes the items on separate lines."
+    explanation: "Not correct. The file must be JSON."
+  - id: c
+    text: "It sets one environment variable for each item."
+    explanation: "Not correct. Results are files."
+  - id: d
+    text: "It writes a comma-separated string."
+    explanation: "Not correct. That is a string result."
+  correct_option: a
+  explanation: "Correct. Array and object results are JSON in the result file."
+- id: ats125-010-03-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know the effect of invalid JSON"
+  source_readings:
+  - sections/section-010/module-03/course-02-array-and-object-results.md
+  prompt: "A step exits with 0 but writes text that is not JSON into an array result. What happens?"
+  options:
+  - id: a
+    text: "The run succeeds and the result is an empty array."
+    explanation: "Not correct. The value is checked after the pod ends."
+  - id: b
+    text: "The run fails."
+    explanation: "Correct. A result that is not valid JSON fails the run even if the step exits with 0."
+  - id: c
+    text: "The run succeeds with a string result."
+    explanation: "Not correct. The declared type is array."
+  - id: d
+    text: "The step is run again."
+    explanation: "Not correct. Retries only happen when `retries` is set."
+  correct_option: b
+  explanation: "Correct. A result that is not valid JSON fails the run even if the step exits with 0."
+- id: ats125-010-03-q07
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know the result size limit"
+  source_readings:
+  - sections/section-010/module-03/course-02-array-and-object-results.md
+  prompt: "About how many bytes can all results of one pod hold together?"
+  options:
+  - id: a
+    text: "About 64."
+    explanation: "Not correct. This is much smaller than the limit."
+  - id: b
+    text: "About 1 MiB."
+    explanation: "Not correct. This is much larger than the limit."
+  - id: c
+    text: "About 4096."
+    explanation: "Correct. All results share a small message, about 4096 bytes."
+  - id: d
+    text: "There is no limit."
+    explanation: "Not correct. The results travel in the termination message, which is small."
+  correct_option: c
+  explanation: "Correct. All results share a small message, about 4096 bytes."
+- id: ats125-010-03-q08
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Read the retry count"
+  source_readings:
+  - sections/section-010/module-03/course-03-context-variables-and-array-indexing.md
+  prompt: "Which variable gives the number of the attempt of a `TaskRun`?"
+  options:
+  - id: a
+    text: "`$(context.taskRun.attempt)`"
+    explanation: "Not correct. This variable does not exist."
+  - id: b
+    text: "`$(context.retries)`"
+    explanation: "Not correct. This variable does not exist."
+  - id: c
+    text: "`$(params.retry-count)`"
+    explanation: "Not correct. It is a context variable, not a parameter."
+  - id: d
+    text: "`$(context.taskRun.retry-count)`"
+    explanation: "Correct. The first attempt is 0."
+  correct_option: d
+  explanation: "Correct. The first attempt is 0."
+- id: ats125-010-03-q09
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Use an array position"
+  source_readings:
+  - sections/section-010/module-03/course-03-context-variables-and-array-indexing.md
+  prompt: "The array parameter `items` has three items. How do you read the first one in a string field?"
+  options:
+  - id: a
+    text: "`$(params.items[0])`"
+    explanation: "Correct. Positions start at zero."
+  - id: b
+    text: "`$(params.items[1])`"
+    explanation: "Not correct. Positions start at 0."
+  - id: c
+    text: "`$(params.items.first)`"
+    explanation: "Not correct. Arrays have no names for positions."
+  - id: d
+    text: "`$(params.items)`"
+    explanation: "Not correct. That is the whole array, not valid in a string field."
+  correct_option: a
+  explanation: "Correct. Positions start at zero."
+- id: ats125-010-03-q10
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Start a Task with defaults"
+  source_readings:
+  - sections/section-010/module-03/course-04-defaults-required-parameters-and-tkn.md
+  prompt: "Which `tkn task start` flag uses the default of every parameter without asking?"
+  options:
+  - id: a
+    text: "`--defaults`"
+    explanation: "Not correct. This is not a flag of the command."
+  - id: b
+    text: "`--use-param-defaults`"
+    explanation: "Correct. Without the flag, `tkn` asks for each parameter."
+  - id: c
+    text: "`--showlog`"
+    explanation: "Not correct. This follows the log."
+  - id: d
+    text: "`--dry-run`"
+    explanation: "Not correct. This prints the run without creating it."
+  correct_option: b
+  explanation: "Correct. Without the flag, `tkn` asks for each parameter."

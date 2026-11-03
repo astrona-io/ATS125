@@ -216,3 +216,279 @@ questions:
         explanation: "Not correct. The registry in the lab needs no login, and a Secret does not carry images."
     correct_option: a
     explanation: "Correct. Without it, the push step does not know the image."
+
+  - id: ats125-final-q10
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Use a StepAction from a Task"
+    source_readings:
+      - sections/section-010/module-02/course-01-write-a-stepaction-and-use-it-with-ref.md
+    prompt: "Which field of a Task step uses a `StepAction`?"
+    options:
+      - id: a
+        text: "`taskRef`, as in a `TaskRun`."
+        explanation: "Not correct. `taskRef` belongs to a `TaskRun` or a Pipeline task."
+      - id: b
+        text: "`uses`, followed by the name."
+        explanation: "Not correct. Tekton has no `uses` field in a step."
+      - id: c
+        text: "`ref`, with the field `name` set to the `StepAction`."
+        explanation: "Correct. A step with `ref.name` runs the `StepAction`."
+      - id: d
+        text: "`image`, set to the name of the `StepAction`."
+        explanation: "Not correct. `image` names a container image."
+    correct_option: c
+    explanation: "Correct. A step with `ref.name` runs the `StepAction`."
+
+  - id: ats125-final-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read a result in a later step"
+    source_readings:
+      - sections/section-010/module-02/course-03-return-results-from-a-stepaction.md
+    prompt: "A step named `measure` wrote the step result `size`. How does a later step read it in `env`?"
+    options:
+      - id: a
+        text: "`$(step.results.size.path)`"
+        explanation: "Not correct. That is the file path in the step that writes it."
+      - id: b
+        text: "`$(results.measure.size)`"
+        explanation: "Not correct. That form does not exist."
+      - id: c
+        text: "`$(tasks.measure.results.size)`"
+        explanation: "Not correct. `tasks` is for Pipelines."
+      - id: d
+        text: "`$(steps.measure.results.size)`"
+        explanation: "Correct. Later steps read a result with `$(steps.<step>.results.<name>)`."
+    correct_option: d
+    explanation: "Correct. Later steps read a result with `$(steps.<step>.results.<name>)`."
+
+  - id: ats125-final-q12
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read one key"
+    source_readings:
+      - sections/section-010/module-03/course-01-object-parameters-and-their-properties.md
+    prompt: "The object parameter `ship` has the key `name`. How do you read the key?"
+    options:
+      - id: a
+        text: "`$(params.ship.name)`"
+        explanation: "Correct. A key is read with a dot after the parameter name."
+      - id: b
+        text: "`$(params.ship[name])`"
+        explanation: "Not correct. This form does not exist for objects."
+      - id: c
+        text: "`$(params.ship->name)`"
+        explanation: "Not correct. This is not a variable form."
+      - id: d
+        text: "`$(ship.name)`"
+        explanation: "Not correct. Parameters are always under `params`."
+    correct_option: a
+    explanation: "Correct. A key is read with a dot after the parameter name."
+
+  - id: ats125-final-q13
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know the effect of invalid JSON"
+    source_readings:
+      - sections/section-010/module-03/course-02-array-and-object-results.md
+    prompt: "A step exits with 0 but writes text that is not JSON into an array result. What happens?"
+    options:
+      - id: a
+        text: "The run succeeds and the result is an empty array."
+        explanation: "Not correct. The value is checked after the pod ends."
+      - id: b
+        text: "The run fails."
+        explanation: "Correct. A result that is not valid JSON fails the run even if the step exits with 0."
+      - id: c
+        text: "The run succeeds with a string result."
+        explanation: "Not correct. The declared type is array."
+      - id: d
+        text: "The step is run again."
+        explanation: "Not correct. Retries only happen when `retries` is set."
+    correct_option: b
+    explanation: "Correct. A result that is not valid JSON fails the run even if the step exits with 0."
+
+  - id: ats125-final-q14
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know that /tmp is not shared"
+    source_readings:
+      - sections/section-020/module-02/course-01-task-volumes-and-volumemounts.md
+    prompt: "Step one writes `/tmp/a.txt`. Can step two read it?"
+    options:
+      - id: a
+        text: "Yes, `/tmp` is shared by the pod."
+        explanation: "Not correct. Only mounted volumes and `/workspace` are shared."
+      - id: b
+        text: "Yes, but only if both steps use the same image."
+        explanation: "Not correct. The image does not matter."
+      - id: c
+        text: "No. Each step has its own file system outside shared volumes."
+        explanation: "Correct. Use `/workspace` or a volume."
+      - id: d
+        text: "Yes, after `sync` runs."
+        explanation: "Not correct. There is no such step."
+    correct_option: c
+    explanation: "Correct. Use `/workspace` or a volume."
+
+  - id: ats125-final-q15
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know how a sidecar ends"
+    source_readings:
+      - sections/section-020/module-02/course-04-sidecar-lifecycle-and-readiness.md
+    prompt: "What does the controller do to a sidecar when the last step ends?"
+    options:
+      - id: a
+        text: "It sends a signal to the sidecar."
+        explanation: "Not correct. The controller replaces the image."
+      - id: b
+        text: "It deletes the pod at once."
+        explanation: "Not correct. The pod must report the result first."
+      - id: c
+        text: "Nothing. The pod waits for the sidecar."
+        explanation: "Not correct. That would make the run hang."
+      - id: d
+        text: "It replaces the image with the `nop` image so that the container ends."
+        explanation: "Correct. The `nop` image ends the container."
+    correct_option: d
+    explanation: "Correct. The `nop` image ends the container."
+
+  - id: ats125-final-q16
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know the default timeout"
+    source_readings:
+      - sections/section-040/module-01/course-01-timeouts-for-a-taskrun-and-a-step.md
+    prompt: "A `TaskRun` sets no `timeout`. What limit applies by default?"
+    options:
+      - id: a
+        text: "60 minutes, from `default-timeout-minutes`."
+        explanation: "Correct. The value comes from the ConfigMap `config-defaults`."
+      - id: b
+        text: "No limit."
+        explanation: "Not correct. Only `0` means no limit."
+      - id: c
+        text: "10 minutes."
+        explanation: "Not correct. The default is 60 minutes."
+      - id: d
+        text: "1 minute."
+        explanation: "Not correct. The default is 60 minutes."
+    correct_option: a
+    explanation: "Correct. The value comes from the ConfigMap `config-defaults`."
+
+  - id: ats125-final-q17
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read a timeout failure"
+    source_readings:
+      - sections/section-040/module-01/course-01-timeouts-for-a-taskrun-and-a-step.md
+    prompt: "Which reason does the `Succeeded` condition show after a `TaskRun` exceeds its timeout?"
+    options:
+      - id: a
+        text: "`Failed`"
+        explanation: "Not correct. `Failed` is used when a step fails."
+      - id: b
+        text: "`TaskRunTimeout`"
+        explanation: "Correct. The controller deletes the pod."
+      - id: c
+        text: "`TaskRunCancelled`"
+        explanation: "Not correct. That is the reason after a cancel."
+      - id: d
+        text: "`ToBeRetried`"
+        explanation: "Not correct. That is the reason while a retry waits."
+    correct_option: b
+    explanation: "Correct. The controller deletes the pod."
+
+  - id: ats125-final-q18
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Count attempts"
+    source_readings:
+      - sections/section-040/module-01/course-02-retries-and-the-retry-count.md
+    prompt: "With `retries: 2`, how many attempts can a `TaskRun` make at most?"
+    options:
+      - id: a
+        text: "Two."
+        explanation: "Not correct. The first attempt is not a retry."
+      - id: b
+        text: "Four."
+        explanation: "Not correct. Retries add two to the first attempt."
+      - id: c
+        text: "Three."
+        explanation: "Correct. One first attempt plus two retries."
+      - id: d
+        text: "One."
+        explanation: "Not correct. Retries add attempts."
+    correct_option: c
+    explanation: "Correct. One first attempt plus two retries."
+
+  - id: ats125-final-q19
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know the pending state"
+    source_readings:
+      - sections/section-040/module-01/course-03-cancel-and-pending-runs.md
+    prompt: "What happens to a `TaskRun` created with `spec.status: TaskRunPending`?"
+    options:
+      - id: a
+        text: "It runs once and then waits."
+        explanation: "Not correct. It does not start."
+      - id: b
+        text: "It is deleted after the timeout."
+        explanation: "Not correct. The clock is not running."
+      - id: c
+        text: "It fails with `TaskRunTimeout`."
+        explanation: "Not correct. The clock is not running."
+      - id: d
+        text: "The controller creates no pod, and the timeout clock does not run until the field is removed."
+        explanation: "Correct. The reason in the condition is `TaskRunPending`."
+    correct_option: d
+    explanation: "Correct. The reason in the condition is `TaskRunPending`."
+
+  - id: ats125-final-q20
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the step container"
+    source_readings:
+      - sections/section-040/module-02/course-02-logs-and-cleanup.md
+    prompt: "A Task has a step named `second`. Which container holds its log?"
+    options:
+      - id: a
+        text: "`step-second`"
+        explanation: "Correct. Use `kubectl logs POD -c step-second`."
+      - id: b
+        text: "`second`"
+        explanation: "Not correct. Tekton adds a prefix."
+      - id: c
+        text: "`sidecar-second`"
+        explanation: "Not correct. That prefix is for sidecars."
+      - id: d
+        text: "`prepare`"
+        explanation: "Not correct. That container is not the step."
+    correct_option: a
+    explanation: "Correct. Use `kubectl logs POD -c step-second`."
+
+  - id: ats125-final-q21
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the failed step"
+    source_readings:
+      - sections/section-040/module-02/course-03-reading-status-and-termination-reasons.md
+    prompt: "Where is the fastest place to see which step of a failed run failed and with which exit code?"
+    options:
+      - id: a
+        text: "The `spec` of the `TaskRun`."
+        explanation: "Not correct. The spec is what you asked for."
+      - id: b
+        text: "The message of the `Succeeded` condition."
+        explanation: "Correct. The message looks like `\"step-name\" exited with code 7`."
+      - id: c
+        text: "The Task `metadata`."
+        explanation: "Not correct. It has no run data."
+      - id: d
+        text: "The events of the node."
+        explanation: "Not correct. The message already names the step."
+    correct_option: b
+    explanation: "Correct. The message looks like `\"step-name\" exited with code 7`."

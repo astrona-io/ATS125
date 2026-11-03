@@ -1,0 +1,13 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: ship-card-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: ship-card
+  params:
+    - name: ship
+      value:
+        name: bridge
+        class: flagship

@@ -1,0 +1,52 @@
+# Write A Task With An Object Parameter And Array Results
+# Astrona graded lab. Schema: internal/config.LabConfig.
+
+metadata:
+  name: "ats-125-lab-010-03"
+  docs:
+    guide: "solution.md"
+    solution: "solution.md"
+    question: "question.md"
+    examQuestion: "question.md"
+    prerequisites: "prerequisites.md"
+bootstrap:
+  init:
+    - name: "install-tekton"
+      description: "Installs the tkn CLI 0.46.2 and Tekton Pipelines v1.17.1, and waits until the webhook answers"
+      type: "file"
+      source: "bootstrap/01-install-tekton.sh"
+  manifests:
+    - name: "lab-start"
+      description: "The namespace starfleet"
+      type: "file"
+      source: "manifests/lab-start.yaml"
+testing:
+  init:
+    - name: "wait-for-tekton"
+      description: "Waits until every Tekton Deployment is ready"
+      type: "file"
+      source: "testing/wait-for-tekton.sh"
+    - name: "reference-solution"
+      description: "The fix a correct learner makes; used by `astrona test`"
+      type: "file"
+      source: "solution/apply.sh"
+validation:
+  scripts:
+    - name: "validate-task-ship-card"
+      description: "Confirms the Task ship-card declares the object parameter ship, the array result tags and the results card and run-name"
+      type: "file"
+      source: "validation/validate-task-ship-card.sh"
+    - name: "validate-ship-card-run"
+      description: "Confirms ship-card-run passes the object, succeeded and reports the exact results"
+      type: "file"
+      source: "validation/validate-ship-card-run.sh"
+    - name: "validate-grader-ship-card"
+      description: "Runs a grader TaskRun with another ship and checks card, tags and run-name"
+      type: "file"
+      source: "validation/validate-grader-ship-card.sh"
+teardown:
+  keepCluster: false
+runtime:
+  kind:
+    preloadImages:
+      - busybox:1.37.0

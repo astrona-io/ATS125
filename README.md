@@ -33,16 +33,20 @@ contains:
 
 | Section | Title | Modules | Labs | Topic |
 | --- | --- | --- | --- | --- |
-| [010](sections/section-010) | Write Tasks With Steps, Parameters And Results | 1 | 1 + capstone | Task anatomy |
-| [020](sections/section-020) | Share Data With Workspaces | 1 | 1 + capstone | Workspaces |
+| [010](sections/section-010) | Write Tasks With Steps, Parameters And Results | 3 | 3 + capstone | Task anatomy, StepActions, object parameters |
+| [020](sections/section-020) | Share Data With Workspaces | 2 | 2 + capstone | Workspaces, volumes and sidecars |
 | [030](sections/section-030) | Step Lifecycle And A Container Build Task | 1 | 1 + capstone | Step lifecycle and image builds |
+| [040](sections/section-040) | Run And Debug Tasks | 2 | 2 + capstone | TaskRun settings and debugging |
 
 The order goes from the inside of a `Task` to the files around it and then to
 its behaviour over time. Section 010 takes a `Task` apart: steps, parameters
-and results. Section 020 gives Tasks files through workspaces. Section 030
-reads how runs and steps end, handles failed steps with `onError` and exit
-codes, and ends with a Buildah Task that builds from a workspace and pushes
-to a registry inside the cluster.
+and results, then reusable steps with `StepAction` and object parameters.
+Section 020 gives Tasks files through workspaces, then volumes and sidecars.
+Section 030 reads how runs and steps end, handles failed steps with `onError`
+and exit codes, and ends with a Buildah Task that builds from a workspace and
+pushes to a registry inside the cluster. Section 040 sets timeouts, retries,
+cancel and pending runs on a `TaskRun`, and teaches `tkn` and status reading
+for debugging.
 
 ---
 
@@ -51,14 +55,24 @@ to a registry inside the cluster.
 | Module | Reader | Parts | Labs |
 | --- | --- | --- | --- |
 | 010-01 | [Write A Task From Steps, Parameters And Results](sections/section-010/module-01/course.md) | 3 | [lab-01](sections/section-010/module-01/labs/lab-01) |
+| 010-02 | [Reuse Steps With StepActions](sections/section-010/module-02/course.md) | 4 | [lab-01](sections/section-010/module-02/labs/lab-01) |
+| 010-03 | [Object Parameters, Array Results And Context Variables](sections/section-010/module-03/course.md) | 4 | [lab-01](sections/section-010/module-03/labs/lab-01) |
 | 020-01 | [Share Files With Workspaces](sections/section-020/module-01/course.md) | 3 | [lab-01](sections/section-020/module-01/labs/lab-01) |
+| 020-02 | [Task Volumes And Sidecars](sections/section-020/module-02/course.md) | 4 | [lab-01](sections/section-020/module-02/labs/lab-01) |
 | 030-01 | [Control Step Failures And Build An Image](sections/section-030/module-01/course.md) | 3 | [lab-01](sections/section-030/module-01/labs/lab-01) |
+| 040-01 | [Control How A TaskRun Runs](sections/section-040/module-01/course.md) | 4 | [lab-01](sections/section-040/module-01/labs/lab-01) |
+| 040-02 | [Run And Debug Tasks With tkn](sections/section-040/module-02/course.md) | 4 | [lab-01](sections/section-040/module-02/labs/lab-01) |
 
 | Lab | Title | Kind | Faults or work |
 | --- | --- | --- | --- |
 | 010-01 | Repair A Task's Parameters, Environment And Results | troubleshooting | an array parameter passed as a string, a step that hides a `stepTemplate` variable, a result written with a newline |
+| 010-02 | Write A Task From A StepAction | build | a Task with a step that uses a `StepAction` with `ref`, a parameter and a result |
+| 010-03 | Write A Task With An Object Parameter And Array Results | build | an object parameter, an array result and a context value |
 | 020-01 | Bind Workspaces To A TaskRun | build | bind a PVC with `subPath`, a ConfigMap and an isolated Secret workspace |
+| 020-02 | Write A Task With A Sidecar And A Shared Volume | build | a sidecar web server, a shared `emptyDir` and a step that retries until the sidecar answers |
 | 030-01 | Write A Build Task That Pushes To A Registry | build | a Buildah Task with `IMAGE`/`CONTEXT`/`DOCKERFILE`, a `source` workspace and `IMAGE_DIGEST`/`IMAGE_URL` |
+| 040-01 | Fix A Failing TaskRun With Timeout And Retries | troubleshooting | a run without retries, then a run with `retries`, a timeout and a recorded failed attempt |
+| 040-02 | Diagnose A Failing Archive Task | troubleshooting | read the failed step and exit code from the status, and move a file from `/tmp` to `/workspace` |
 
 ---
 
@@ -69,6 +83,7 @@ to a registry inside the cluster.
 | [010](sections/section-010/capstone/labs/lab-01) | Repair A Task Built From Steps, Parameters And Results | a wrong Secret key (`CreateContainerConfigError`), a `bash` shebang on busybox, a `stepTemplate` that ignores a parameter |
 | [020](sections/section-020/capstone/labs/lab-01) | Repair The Workspaces Of A Report Task | two PVCs in one TaskRun, `readOnly` on the output workspace, a wrong `subPath` that still succeeds |
 | [030](sections/section-030/capstone/labs/lab-01) | Repair A Failing Image Build | Buildah without `--storage-driver=vfs`, a push with TLS verification to an HTTP registry, an exit-handler step that never fails the run |
+| [040](sections/section-040/capstone/labs/lab-01) | Rescue A Night Of Report Runs | a timed-out run to diagnose, a runaway run to cancel, a pending run to release, a safe run with retries, a timeout and a memory limit |
 
 ---
 

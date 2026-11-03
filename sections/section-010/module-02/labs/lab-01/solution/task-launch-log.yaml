@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: launch-log
+  namespace: starfleet
+spec:
+  params:
+    - name: message
+      type: string
+  results:
+    - name: entry
+      description: The line the step composed
+      value: $(steps.compose.results.line)
+  steps:
+    - name: compose
+      ref:
+        name: compose-line
+      params:
+        - name: prefix
+          value: launch
+        - name: message
+          value: $(params.message)

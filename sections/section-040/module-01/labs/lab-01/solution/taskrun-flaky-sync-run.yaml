@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: flaky-sync-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: flaky-sync
+  retries: 2
+  timeout: 2m

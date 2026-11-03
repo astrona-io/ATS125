@@ -2,7 +2,7 @@
 
 Parameters and results carry short values. Real CI/CD work, that is continuous integration and delivery, carries files: source code, settings, credentials, build caches and reports. In Tekton those files travel through workspaces, folders that a `Task` declares and a `TaskRun` fills with real storage.
 
-This section teaches workspaces from the simplest binding to the most durable one. You first declare a workspace, use its variables and bind it to an `emptyDir`. Then you mount read-only settings from a ConfigMap and a token from a Secret, make a workspace optional and limit it to one step. Last, you keep files between runs with a PersistentVolumeClaim, use `subPath` and `volumeClaimTemplate`, and meet the rule that one `TaskRun` binds one PersistentVolumeClaim by default.
+This section teaches workspaces from the simplest binding to the most durable one. You first declare a workspace, use its variables and bind it to an `emptyDir`. Then you mount read-only settings from a ConfigMap and a token from a Secret, make a workspace optional and limit it to one step. Last, you keep files between runs with a PersistentVolumeClaim, use `subPath` and `volumeClaimTemplate`, and meet the rule that one `TaskRun` binds one PersistentVolumeClaim by default. A second module compares workspaces with Task volumes and adds sidecars, containers that run beside the steps.
 
 **Topic covered:** Workspaces
 
@@ -13,10 +13,12 @@ This section teaches workspaces from the simplest binding to the most durable on
 - Read-only, optional and isolated workspaces.
 - `subPath`, and why a wrong one does not fail.
 - The life of a PersistentVolumeClaim made from a template, and the one-PersistentVolumeClaim rule.
+- Task `volumes` and `volumeMounts`, and how they differ from workspaces.
+- Sidecars: reaching them at `localhost`, how they end, and why a step must retry until they answer.
 
 ## The learning path
 
-The section has one module. It has a landing page, three short parts, a graded lab right after the part it tests, and a summary. The module also has its own playground, a cluster where you can explore freely, and the landing page starts it for you.
+The section has two modules. Each has a landing page, short parts, a graded lab right after the part it tests, and a summary. Each module also has its own playground, a cluster where you can explore freely, and the landing page starts it for you.
 
 ### 1. Share Files With Workspaces
 
@@ -27,9 +29,19 @@ The module starts at its landing page, which also launches the playground. The p
 3. Persistent Workspaces With PersistentVolumeClaims, followed by the lab **Bind Workspaces To A TaskRun**
 4. Summary
 
+### 2. Task Volumes And Sidecars
+
+The playground has the same tools and an empty namespace `starfleet`.
+
+1. Task Volumes And volumeMounts
+2. Workspaces Compared With Volumes
+3. Sidecars In A Task
+4. Sidecar Lifecycle And Readiness, followed by the lab **Write A Task With A Sidecar And A Shared Volume**
+5. Summary
+
 ## Section capstone: Repair The Workspaces Of A Report Task
 
-The capstone is one graded scenario that combines the whole module. The `deck-report` Task of the `starfleet` team adds a weekly line to a history file in a PersistentVolumeClaim, and its TaskRun fails: it binds two PersistentVolumeClaims, the Task declares its output read-only, and the history sits in a different folder than the run uses. Find each fault, fix the Task and the TaskRun, and prove that the history grew by one line. Work it after the module lab.
+The capstone is one graded scenario that combines the first module. The `deck-report` Task of the `starfleet` team adds a weekly line to a history file in a PersistentVolumeClaim, and its TaskRun fails: it binds two PersistentVolumeClaims, the Task declares its output read-only, and the history sits in a different folder than the run uses. Find each fault, fix the Task and the TaskRun, and prove that the history grew by one line. Work it after the module lab.
 
 Start the capstone:
 

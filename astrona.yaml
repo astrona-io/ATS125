@@ -21,7 +21,9 @@ training:
     StepActions), string, array and object parameters with defaults, Task
     results and step results, sharing files through workspaces bound to
     emptyDir, ConfigMap, Secret, PersistentVolumeClaim and volumeClaimTemplate
-    volumes, the TaskRun lifecycle and step termination states, onError and
+    volumes, Task volumes and sidecars, the TaskRun lifecycle and step
+    termination states, TaskRun timeout, retries, cancel and pending runs,
+    debugging with tkn, onError and
     step exit codes as the exit handler of a Task, and a containerized build
     Task that builds an image with Buildah from a workspace, pushes it to a
     registry and reports its digest. Each module pairs a layered reader with
@@ -64,7 +66,8 @@ modules:
       The anatomy of a Task: steps with command and args or script, the
       entrypoint binary, env, envFrom, workingDir, computeResources and the
       stepTemplate, StepActions, string, array and object parameters with
-      defaults and safe substitution, Task results and step results.
+      defaults and safe substitution, object parameters, Task results, array
+      and object results, step results and context variables.
 
     content:
       - type: reading
@@ -110,6 +113,98 @@ modules:
         path: sections/section-010/module-01/course-04-summary.md
 
       - type: reading
+        title: "Reuse Steps With StepActions"
+        path: sections/section-010/module-02/course.md
+      - type: reading
+        title: "Write A StepAction And Use It With ref"
+        path: sections/section-010/module-02/course-01-write-a-stepaction-and-use-it-with-ref.md
+      - type: reading
+        title: "Pass Parameters To A StepAction"
+        path: sections/section-010/module-02/course-02-pass-parameters-to-a-stepaction.md
+      - type: reading
+        title: "Return Results From A StepAction"
+        path: sections/section-010/module-02/course-03-return-results-from-a-stepaction.md
+      - type: reading
+        title: "Which Fields A ref Step Can Set"
+        path: sections/section-010/module-02/course-04-which-fields-a-ref-step-can-set.md
+      - type: reading
+        title: Question
+        path: sections/section-010/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Write A Task From A StepAction Lab"
+        path: sections/section-010/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: stepactions
+        task_kind: build
+        tags: [stepaction, ref, params, step-results, resolvers]
+        learning_goals:
+          - Write a Task whose step uses a StepAction with ref and passes it a parameter
+          - Return a value from the StepAction and read it in a later step and in a Task result
+          - Prove the Task with a TaskRun that reports the expected result
+        resources:
+          - name: "StepActions and step results"
+            url: https://tekton.dev/docs/pipelines/stepactions/
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-02/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Reuse Steps With StepActions"
+        path: sections/section-010/module-02/quiz.yaml
+        question_count: 10
+        pass_score: 70
+
+      - type: reading
+        title: "Object Parameters, Array Results And Context Variables"
+        path: sections/section-010/module-03/course.md
+      - type: reading
+        title: "Object Parameters And Their Properties"
+        path: sections/section-010/module-03/course-01-object-parameters-and-their-properties.md
+      - type: reading
+        title: "Array And Object Results"
+        path: sections/section-010/module-03/course-02-array-and-object-results.md
+      - type: reading
+        title: "Context Variables And Array Indexing"
+        path: sections/section-010/module-03/course-03-context-variables-and-array-indexing.md
+      - type: reading
+        title: "Defaults, Required Parameters And Starting A Task With tkn"
+        path: sections/section-010/module-03/course-04-defaults-required-parameters-and-tkn.md
+      - type: reading
+        title: Question
+        path: sections/section-010/module-03/labs/lab-01/question.md
+      - type: lab
+        title: "Write A Task With An Object Parameter And Array Results Lab"
+        path: sections/section-010/module-03/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: parameters
+        task_kind: build
+        tags: [object-params, array-results, object-results, context, tkn]
+        learning_goals:
+          - Declare an object parameter with properties and read its keys in a script through environment variables
+          - Return an array result and a context value as Task results
+          - Prove the Task with a TaskRun that reports the expected results
+        resources:
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+          - name: "Variable substitutions"
+            url: https://tekton.dev/docs/pipelines/variables/
+          - name: "tkn command-line tool"
+            url: https://tekton.dev/docs/cli/
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-03/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Object Parameters, Array Results And Context Variables"
+        path: sections/section-010/module-03/quiz.yaml
+        question_count: 10
+        pass_score: 70
+
+      - type: reading
         title: Question
         path: sections/section-010/capstone/labs/lab-01/question.md
       - type: lab
@@ -142,7 +237,8 @@ modules:
       Workspaces: declarations with mountPath, readOnly and optional, the
       workspace variables, emptyDir, ConfigMap, Secret, PersistentVolumeClaim
       and volumeClaimTemplate bindings, subPath, isolated workspaces, and the
-      one-PersistentVolumeClaim rule of the default coschedule setting.
+      one-PersistentVolumeClaim rule of the default coschedule setting, Task
+      volumes and sidecars.
 
     content:
       - type: reading
@@ -184,6 +280,52 @@ modules:
       - type: reading
         title: Summary
         path: sections/section-020/module-01/course-04-summary.md
+
+      - type: reading
+        title: "Task Volumes And Sidecars"
+        path: sections/section-020/module-02/course.md
+      - type: reading
+        title: "Task Volumes And volumeMounts"
+        path: sections/section-020/module-02/course-01-task-volumes-and-volumemounts.md
+      - type: reading
+        title: "Workspaces Compared With Volumes"
+        path: sections/section-020/module-02/course-02-workspaces-compared-with-volumes.md
+      - type: reading
+        title: "Sidecars In A Task"
+        path: sections/section-020/module-02/course-03-sidecars-in-a-task.md
+      - type: reading
+        title: "Sidecar Lifecycle And Readiness"
+        path: sections/section-020/module-02/course-04-sidecar-lifecycle-and-readiness.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Write A Task With A Sidecar And A Shared Volume Lab"
+        path: sections/section-020/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: volumes-and-sidecars
+        task_kind: build
+        tags: [volumes, emptydir, sidecar, localhost, retry-loop]
+        learning_goals:
+          - Write a Task with a sidecar web server and a volume shared with a step
+          - Make a step wait for the sidecar with a retry loop and return what it fetched as a result
+          - Prove the Task with a TaskRun and a grader run with another message
+        resources:
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+          - name: "Workspaces"
+            url: https://tekton.dev/docs/pipelines/workspaces/
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-02/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Task Volumes And Sidecars"
+        path: sections/section-020/module-02/quiz.yaml
+        question_count: 10
+        pass_score: 70
 
       - type: reading
         title: Question
@@ -288,6 +430,132 @@ modules:
         title: "Knowledge Check: Step Lifecycle And A Container Build Task"
         path: sections/section-030/quiz.yaml
         pass_score: 70
+  - id: module-040
+    title: "Run And Debug Tasks"
+    description: >
+      The settings of a TaskRun: timeout and step timeout, retries and the
+      retry count, cancel and pending runs, stepSpecs, serviceAccountName and
+      podTemplate. Starting, listing and describing runs with tkn, reading
+      logs per step, reading status and termination reasons, and the usual
+      causes of a failing Task.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-040/README.md
+
+      - type: reading
+        title: "Control How A TaskRun Runs"
+        path: sections/section-040/module-01/course.md
+      - type: reading
+        title: "Timeouts For A TaskRun And For A Step"
+        path: sections/section-040/module-01/course-01-timeouts-for-a-taskrun-and-a-step.md
+      - type: reading
+        title: "Retries And The Retry Count"
+        path: sections/section-040/module-01/course-02-retries-and-the-retry-count.md
+      - type: reading
+        title: "Cancel And Pending Runs"
+        path: sections/section-040/module-01/course-03-cancel-and-pending-runs.md
+      - type: reading
+        title: "Resources, Service Account And Pod Settings"
+        path: sections/section-040/module-01/course-04-resources-service-account-and-pod-settings.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Fix A Failing TaskRun With Timeout And Retries Lab"
+        path: sections/section-040/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: taskrun-settings
+        task_kind: troubleshooting
+        tags: [timeout, retries, retries-status, retry-count, task-run]
+        learning_goals:
+          - Find why a TaskRun without retries failed
+          - Create a TaskRun with enough retries and a timeout for each attempt
+          - Prove the fix with the record of failed attempts in status.retriesStatus
+        resources:
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+      - type: reading
+        title: Summary
+        path: sections/section-040/module-01/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Control How A TaskRun Runs"
+        path: sections/section-040/module-01/quiz.yaml
+        question_count: 10
+        pass_score: 70
+
+      - type: reading
+        title: "Run And Debug Tasks With tkn"
+        path: sections/section-040/module-02/course.md
+      - type: reading
+        title: "Start And Describe With tkn"
+        path: sections/section-040/module-02/course-01-start-and-describe-with-tkn.md
+      - type: reading
+        title: "Logs And Cleanup"
+        path: sections/section-040/module-02/course-02-logs-and-cleanup.md
+      - type: reading
+        title: "Reading Status And Termination Reasons"
+        path: sections/section-040/module-02/course-03-reading-status-and-termination-reasons.md
+      - type: reading
+        title: "Debugging Patterns"
+        path: sections/section-040/module-02/course-04-debugging-patterns.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Diagnose A Failing Archive Task Lab"
+        path: sections/section-040/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: debugging
+        task_kind: troubleshooting
+        tags: [tkn, status-steps, exit-code, workspace, tmp, debugging]
+        learning_goals:
+          - Read the status of a failed TaskRun and find the failed step and its exit code
+          - Find the file that a later step cannot see and move it to a shared folder
+          - Prove the fix with a TaskRun that reports the size of the file
+        resources:
+          - name: "tkn command-line tool"
+            url: https://tekton.dev/docs/cli/
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+      - type: reading
+        title: Summary
+        path: sections/section-040/module-02/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Run And Debug Tasks With tkn"
+        path: sections/section-040/module-02/quiz.yaml
+        question_count: 10
+        pass_score: 70
+
+      - type: reading
+        title: Question
+        path: sections/section-040/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Rescue A Night Of Report Runs Capstone"
+        path: sections/section-040/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 40m
+        topic: taskrun-settings
+        task_kind: troubleshooting
+        tags: [timeout, cancel, pending, retries, step-specs, status-conditions]
+        learning_goals:
+          - Read why a TaskRun timed out and record the reason
+          - Cancel a runaway TaskRun and release a pending one
+          - Create a run with retries, a timeout and a step memory limit that succeeds after a failed first attempt
+        resources:
+          - name: "TaskRuns"
+            url: https://tekton.dev/docs/pipelines/taskruns/
+          - name: "Tasks"
+            url: https://tekton.dev/docs/pipelines/tasks/
+          - name: "tkn command-line tool"
+            url: https://tekton.dev/docs/cli/
       - type: quiz
         title: "Final Domain Quiz"
         path: sections/final-domain-quiz.yaml

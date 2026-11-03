@@ -1,0 +1,237 @@
+# Knowledge check for section-040/module-02. Contract: schemas/question-bank.schema.json.
+# Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats125-040-02
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-040/module-02
+  title: "Run And Debug Tasks With tkn"
+placement:
+  position: after
+  reading: sections/section-040/module-02/course-05-summary.md
+questions:
+- id: ats125-040-02-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Follow a started Task"
+  source_readings:
+  - sections/section-040/module-02/course-01-start-and-describe-with-tkn.md
+  prompt: "Which flag makes `tkn task start` follow the log until the run ends?"
+  options:
+  - id: a
+    text: "`--showlog`"
+    explanation: "Correct. The flag is `--showlog`."
+  - id: b
+    text: "`--follow-all`"
+    explanation: "Not correct. This is not a flag of the command."
+  - id: c
+    text: "`--dry-run`"
+    explanation: "Not correct. This creates nothing."
+  - id: d
+    text: "`--use-param-defaults`"
+    explanation: "Not correct. This only fills parameters."
+  correct_option: a
+  explanation: "Correct. The flag is `--showlog`."
+- id: ats125-040-02-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Preview a run"
+  source_readings:
+  - sections/section-040/module-02/course-01-start-and-describe-with-tkn.md
+  prompt: "How do you print the `TaskRun` that `tkn task start` would create, without creating it?"
+  options:
+  - id: a
+    text: "Add `--showlog` only."
+    explanation: "Not correct. This creates the run."
+  - id: b
+    text: "Add `--dry-run` and `--output yaml`."
+    explanation: "Correct. No step runs in a dry run."
+  - id: c
+    text: "Use `tkn taskrun create`."
+    explanation: "Not correct. That is not the command."
+  - id: d
+    text: "Add `--timeout 0`."
+    explanation: "Not correct. This sets a limit on a real run."
+  correct_option: b
+  explanation: "Correct. No step runs in a dry run."
+- id: ats125-040-02-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Describe the newest run"
+  source_readings:
+  - sections/section-040/module-02/course-01-start-and-describe-with-tkn.md
+  prompt: "Which command describes the newest `TaskRun` of a namespace?"
+  options:
+  - id: a
+    text: "`tkn taskrun newest`"
+    explanation: "Not correct. This is not a command."
+  - id: b
+    text: "`tkn task describe --last`"
+    explanation: "Not correct. This describes a Task."
+  - id: c
+    text: "`tkn taskrun describe --last -n <namespace>`"
+    explanation: "Correct. Use `-n` when the namespace differs from the context."
+  - id: d
+    text: "`tkn taskrun delete --last`"
+    explanation: "Not correct. This deletes it."
+  correct_option: c
+  explanation: "Correct. Use `-n` when the namespace differs from the context."
+- id: ats125-040-02-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Name the step container"
+  source_readings:
+  - sections/section-040/module-02/course-02-logs-and-cleanup.md
+  prompt: "A Task has a step named `second`. Which container holds its log?"
+  options:
+  - id: a
+    text: "`second`"
+    explanation: "Not correct. Tekton adds a prefix."
+  - id: b
+    text: "`sidecar-second`"
+    explanation: "Not correct. That prefix is for sidecars."
+  - id: c
+    text: "`prepare`"
+    explanation: "Not correct. That container is not the step."
+  - id: d
+    text: "`step-second`"
+    explanation: "Correct. Use `kubectl logs POD -c step-second`."
+  correct_option: d
+  explanation: "Correct. Use `kubectl logs POD -c step-second`."
+- id: ats125-040-02-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know the effect of deleting a run"
+  source_readings:
+  - sections/section-040/module-02/course-02-logs-and-cleanup.md
+  prompt: "What happens to the pod and logs of a `TaskRun` when you delete the `TaskRun`?"
+  options:
+  - id: a
+    text: "They are deleted too, because the pod is owned by the `TaskRun`."
+    explanation: "Correct. Read the logs before you delete."
+  - id: b
+    text: "They stay in the namespace."
+    explanation: "Not correct. The owner reference removes them."
+  - id: c
+    text: "The logs move to a ConfigMap."
+    explanation: "Not correct. Tekton does not do this."
+  - id: d
+    text: "Only the logs are kept."
+    explanation: "Not correct. The pod and logs go together."
+  correct_option: a
+  explanation: "Correct. Read the logs before you delete."
+- id: ats125-040-02-q06
+  type: single_choice
+  difficulty: advanced
+  learning_objective: "Read a keep command"
+  source_readings:
+  - sections/section-040/module-02/course-02-logs-and-cleanup.md
+  prompt: "What does `tkn taskrun delete --task build --keep 2 -f` do?"
+  options:
+  - id: a
+    text: "It deletes the newest two runs of `build`."
+    explanation: "Not correct. `--keep` keeps runs."
+  - id: b
+    text: "It deletes all runs of the Task `build` except the newest two, without asking."
+    explanation: "Correct. The flag `-f` means force."
+  - id: c
+    text: "It deletes all runs of all Tasks."
+    explanation: "Not correct. `--task` limits it to one Task."
+  - id: d
+    text: "It asks a question for each run."
+    explanation: "Not correct. `-f` skips questions."
+  correct_option: b
+  explanation: "Correct. The flag `-f` means force."
+- id: ats125-040-02-q07
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Read the failed step"
+  source_readings:
+  - sections/section-040/module-02/course-03-reading-status-and-termination-reasons.md
+  prompt: "Where is the fastest place to see which step of a failed run failed and with which exit code?"
+  options:
+  - id: a
+    text: "The `spec` of the `TaskRun`."
+    explanation: "Not correct. The spec is what you asked for."
+  - id: b
+    text: "The Task `metadata`."
+    explanation: "Not correct. It has no run data."
+  - id: c
+    text: "The message of the `Succeeded` condition."
+    explanation: "Correct. The message looks like `\"step-name\" exited with code 7`."
+  - id: d
+    text: "The events of the node."
+    explanation: "Not correct. The message already names the step."
+  correct_option: c
+  explanation: "Correct. The message looks like `\"step-name\" exited with code 7`."
+- id: ats125-040-02-q08
+  type: single_choice
+  difficulty: advanced
+  learning_objective: "Read an out-of-memory kill"
+  source_readings:
+  - sections/section-040/module-02/course-03-reading-status-and-termination-reasons.md
+  prompt: "A step is stopped for using more memory than its limit. Which state does `status.steps` show?"
+  options:
+  - id: a
+    text: "The reason `Completed` and the exit code `0`."
+    explanation: "Not correct. The step did not complete."
+  - id: b
+    text: "The reason `Error` and the exit code `1`."
+    explanation: "Not correct. The kernel kill gives 137."
+  - id: c
+    text: "No state at all."
+    explanation: "Not correct. A terminated state is recorded."
+  - id: d
+    text: "The reason `OOMKilled` and the exit code `137`."
+    explanation: "Correct. Raise the limit with `stepSpecs`."
+  correct_option: d
+  explanation: "Correct. Raise the limit with `stepSpecs`."
+- id: ats125-040-02-q09
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Share files between steps"
+  source_readings:
+  - sections/section-040/module-02/course-04-debugging-patterns.md
+  prompt: "Which folder is shared by all steps of a Task without any declaration?"
+  options:
+  - id: a
+    text: "`/workspace`"
+    explanation: "Correct. Use a workspace for larger data."
+  - id: b
+    text: "`/tmp`"
+    explanation: "Not correct. `/tmp` belongs to one step."
+  - id: c
+    text: "`/root`"
+    explanation: "Not correct. This is not shared."
+  - id: d
+    text: "`/var/run`"
+    explanation: "Not correct. This is not shared."
+  correct_option: a
+  explanation: "Correct. Use a workspace for larger data."
+- id: ats125-040-02-q10
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Inspect a step that fails fast"
+  source_readings:
+  - sections/section-040/module-02/course-04-debugging-patterns.md
+  prompt: "A step fails too fast to inspect. Which approach helps?"
+  options:
+  - id: a
+    text: "Run `kubectl exec` after the step has ended."
+    explanation: "Not correct. The container has ended."
+  - id: b
+    text: "Replace the command with `sleep` in a copy of the Task, then run `kubectl exec` in the step container."
+    explanation: "Correct. Delete the copy afterwards."
+  - id: c
+    text: "Delete the TaskRun and watch the pod."
+    explanation: "Not correct. Deleting removes the pod."
+  - id: d
+    text: "Set `retries: 0` on the Task."
+    explanation: "Not correct. `retries` is a TaskRun field."
+  correct_option: b
+  explanation: "Correct. Delete the copy afterwards."

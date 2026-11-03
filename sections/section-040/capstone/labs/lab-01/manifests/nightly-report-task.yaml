@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: nightly-report
+  namespace: starfleet
+spec:
+  params:
+    - name: delay
+      type: string
+      default: "5"
+    - name: flaky
+      type: string
+      default: "false"
+  results:
+    - name: report
+  steps:
+    - name: collect
+      image: busybox:1.37.0
+      env:
+        - name: DELAY
+          value: $(params.delay)
+        - name: FLAKY
+          value: $(params.flaky)
+        - name: ATTEMPT
+          value: $(context.taskRun.retry-count)
+      script: |
+        #!/bin/sh
+        set -eu
+        echo "collecting for $DELAY seconds"
+        sleep "$DELAY"
+        if [ "$FLAKY" = "true" ] && [ "$ATTEMPT" = "0" ]; then
+          echo "station busy"
+          exit 1
+        fi
+        echo "collected"
+    - name: publish
+      image: busybox:1.37.0
+      env:
+        - name: ATTEMPT
+          value: $(context.taskRun.retry-count)
+      script: |
+        #!/bin/sh
+        set -eu
+        printf 'nightly report attempt %s' "$ATTEMPT" > "$(results.report.path)"

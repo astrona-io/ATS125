@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: flaky-sync
+  namespace: starfleet
+spec:
+  results:
+    - name: attempt
+  steps:
+    - name: sync
+      image: busybox:1.37.0
+      env:
+        - name: ATTEMPT
+          value: $(context.taskRun.retry-count)
+      script: |
+        #!/bin/sh
+        set -eu
+        echo "sync attempt $ATTEMPT"
+        if [ "$ATTEMPT" -lt 2 ]; then
+          echo "remote station did not answer"
+          exit 1
+        fi
+        printf '%s' "$ATTEMPT" > "$(results.attempt.path)"

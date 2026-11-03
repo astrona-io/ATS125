@@ -1,0 +1,237 @@
+# Knowledge check for section-040/module-01. Contract: schemas/question-bank.schema.json.
+# Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats125-040-01
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-040/module-01
+  title: "Control How A TaskRun Runs"
+placement:
+  position: after
+  reading: sections/section-040/module-01/course-05-summary.md
+questions:
+- id: ats125-040-01-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Know the default timeout"
+  source_readings:
+  - sections/section-040/module-01/course-01-timeouts-for-a-taskrun-and-a-step.md
+  prompt: "A `TaskRun` sets no `timeout`. What limit applies by default?"
+  options:
+  - id: a
+    text: "60 minutes, from `default-timeout-minutes`."
+    explanation: "Correct. The value comes from the ConfigMap `config-defaults`."
+  - id: b
+    text: "No limit."
+    explanation: "Not correct. Only `0` means no limit."
+  - id: c
+    text: "10 minutes."
+    explanation: "Not correct. The default is 60 minutes."
+  - id: d
+    text: "1 minute."
+    explanation: "Not correct. The default is 60 minutes."
+  correct_option: a
+  explanation: "Correct. The value comes from the ConfigMap `config-defaults`."
+- id: ats125-040-01-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Know what zero means"
+  source_readings:
+  - sections/section-040/module-01/course-01-timeouts-for-a-taskrun-and-a-step.md
+  prompt: "What does `timeout: 0s` mean on a `TaskRun`?"
+  options:
+  - id: a
+    text: "The run fails at once."
+    explanation: "Not correct. Zero turns the limit off."
+  - id: b
+    text: "The run has no time limit."
+    explanation: "Correct. Avoid it for real work."
+  - id: c
+    text: "The default of 60 minutes applies."
+    explanation: "Not correct. Zero overrides the default."
+  - id: d
+    text: "The run is cancelled."
+    explanation: "Not correct. A cancel needs `spec.status`."
+  correct_option: b
+  explanation: "Correct. Avoid it for real work."
+- id: ats125-040-01-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Read a timeout failure"
+  source_readings:
+  - sections/section-040/module-01/course-01-timeouts-for-a-taskrun-and-a-step.md
+  prompt: "Which reason does the `Succeeded` condition show after a `TaskRun` exceeds its timeout?"
+  options:
+  - id: a
+    text: "`Failed`"
+    explanation: "Not correct. `Failed` is used when a step fails."
+  - id: b
+    text: "`TaskRunCancelled`"
+    explanation: "Not correct. That is the reason after a cancel."
+  - id: c
+    text: "`TaskRunTimeout`"
+    explanation: "Correct. The controller deletes the pod."
+  - id: d
+    text: "`ToBeRetried`"
+    explanation: "Not correct. That is the reason while a retry waits."
+  correct_option: c
+  explanation: "Correct. The controller deletes the pod."
+- id: ats125-040-01-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know the scope of the timeout"
+  source_readings:
+  - sections/section-040/module-01/course-02-retries-and-the-retry-count.md
+  prompt: "A `TaskRun` has `retries: 2` and `timeout: 5m`. How long can one attempt run?"
+  options:
+  - id: a
+    text: "5 minutes for all attempts together."
+    explanation: "Not correct. The timeout is per attempt."
+  - id: b
+    text: "1 minute and 40 seconds."
+    explanation: "Not correct. The timeout is not divided."
+  - id: c
+    text: "60 minutes."
+    explanation: "Not correct. The set timeout is used."
+  - id: d
+    text: "5 minutes. Each attempt gets the full timeout."
+    explanation: "Correct. The total can be up to 15 minutes."
+  correct_option: d
+  explanation: "Correct. The total can be up to 15 minutes."
+- id: ats125-040-01-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Count attempts"
+  source_readings:
+  - sections/section-040/module-01/course-02-retries-and-the-retry-count.md
+  prompt: "With `retries: 2`, how many attempts can a `TaskRun` make at most?"
+  options:
+  - id: a
+    text: "Three."
+    explanation: "Correct. One first attempt plus two retries."
+  - id: b
+    text: "Two."
+    explanation: "Not correct. The first attempt is not a retry."
+  - id: c
+    text: "Four."
+    explanation: "Not correct. Retries add two to the first attempt."
+  - id: d
+    text: "One."
+    explanation: "Not correct. Retries add attempts."
+  correct_option: a
+  explanation: "Correct. One first attempt plus two retries."
+- id: ats125-040-01-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Find failed attempts"
+  source_readings:
+  - sections/section-040/module-01/course-02-retries-and-the-retry-count.md
+  prompt: "Where does Tekton keep the status of failed attempts?"
+  options:
+  - id: a
+    text: "In `status.steps`."
+    explanation: "Not correct. That shows the steps of the last attempt."
+  - id: b
+    text: "In `status.retriesStatus`."
+    explanation: "Correct. Each entry is a copy of the status of one attempt."
+  - id: c
+    text: "In `spec.retries`."
+    explanation: "Not correct. That is the setting."
+  - id: d
+    text: "In a ConfigMap."
+    explanation: "Not correct. Tekton does not use a ConfigMap for this."
+  correct_option: b
+  explanation: "Correct. Each entry is a copy of the status of one attempt."
+- id: ats125-040-01-q07
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Read the attempt number"
+  source_readings:
+  - sections/section-040/module-01/course-02-retries-and-the-retry-count.md
+  prompt: "What value does `$(context.taskRun.retry-count)` have in the first attempt?"
+  options:
+  - id: a
+    text: "`1`"
+    explanation: "Not correct. Counting starts at 0."
+  - id: b
+    text: "An empty string."
+    explanation: "Not correct. It always has a value."
+  - id: c
+    text: "`0`"
+    explanation: "Correct. It grows by one for each retry."
+  - id: d
+    text: "`-1`"
+    explanation: "Not correct. It is never negative."
+  correct_option: c
+  explanation: "Correct. It grows by one for each retry."
+- id: ats125-040-01-q08
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Cancel a run"
+  source_readings:
+  - sections/section-040/module-01/course-03-cancel-and-pending-runs.md
+  prompt: "Which change cancels a running `TaskRun`?"
+  options:
+  - id: a
+    text: "Delete the pod with `kubectl`."
+    explanation: "Not correct. The controller would not mark the run as cancelled."
+  - id: b
+    text: "Set `spec.timeout` to `1s`."
+    explanation: "Not correct. A started run cannot change its timeout."
+  - id: c
+    text: "Set `spec.retries` to `0`."
+    explanation: "Not correct. A started run cannot change its retries."
+  - id: d
+    text: "Set `spec.status` to `TaskRunCancelled`."
+    explanation: "Correct. `tkn taskrun cancel` does the same."
+  correct_option: d
+  explanation: "Correct. `tkn taskrun cancel` does the same."
+- id: ats125-040-01-q09
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know the pending state"
+  source_readings:
+  - sections/section-040/module-01/course-03-cancel-and-pending-runs.md
+  prompt: "What happens to a `TaskRun` created with `spec.status: TaskRunPending`?"
+  options:
+  - id: a
+    text: "The controller creates no pod, and the timeout clock does not run until the field is removed."
+    explanation: "Correct. The reason in the condition is `TaskRunPending`."
+  - id: b
+    text: "It runs once and then waits."
+    explanation: "Not correct. It does not start."
+  - id: c
+    text: "It is deleted after the timeout."
+    explanation: "Not correct. The clock is not running."
+  - id: d
+    text: "It fails with `TaskRunTimeout`."
+    explanation: "Not correct. The clock is not running."
+  correct_option: a
+  explanation: "Correct. The reason in the condition is `TaskRunPending`."
+- id: ats125-040-01-q10
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Override a step resource"
+  source_readings:
+  - sections/section-040/module-01/course-04-resources-service-account-and-pod-settings.md
+  prompt: "How does a `TaskRun` set a memory limit for the step `build` without changing the Task?"
+  options:
+  - id: a
+    text: "With `spec.params`."
+    explanation: "Not correct. Parameters do not set resources."
+  - id: b
+    text: "With `stepSpecs`: an entry with `name: build` and `computeResources`."
+    explanation: "Correct. `sidecarSpecs` does the same for sidecars."
+  - id: c
+    text: "With `taskSpec` in the `TaskRun`."
+    explanation: "Not correct. That replaces the Task."
+  - id: d
+    text: "It cannot; only the Task can set resources."
+    explanation: "Not correct. A `TaskRun` can override by step name."
+  correct_option: b
+  explanation: "Correct. `sidecarSpecs` does the same for sidecars."

@@ -1,0 +1,8 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: archive-fixed-run
+  namespace: starfleet
+spec:
+  taskRef:
+    name: archive-fixed

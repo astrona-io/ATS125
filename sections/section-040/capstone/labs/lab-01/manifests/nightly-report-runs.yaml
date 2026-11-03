@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: nightly-report-timeout
+  namespace: starfleet
+spec:
+  taskRef:
+    name: nightly-report
+  timeout: 10s
+  params:
+    - name: delay
+      value: "30"
+---
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: nightly-report-runaway
+  namespace: starfleet
+spec:
+  taskRef:
+    name: nightly-report
+  timeout: 2h
+  params:
+    - name: delay
+      value: "3600"
+---
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: nightly-report-held
+  namespace: starfleet
+spec:
+  status: TaskRunPending
+  taskRef:
+    name: nightly-report
+  timeout: 2m

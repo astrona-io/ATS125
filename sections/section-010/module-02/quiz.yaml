@@ -1,0 +1,237 @@
+# Knowledge check for section-010/module-02. Contract: schemas/question-bank.schema.json.
+# Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats125-010-02
+course_id: ATS125
+exam_code: TEKTON
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-010/module-02
+  title: "Reuse Steps With StepActions"
+placement:
+  position: after
+  reading: sections/section-010/module-02/course-05-summary.md
+questions:
+- id: ats125-010-02-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Use a StepAction from a Task"
+  source_readings:
+  - sections/section-010/module-02/course-01-write-a-stepaction-and-use-it-with-ref.md
+  prompt: "Which field of a Task step uses a `StepAction`?"
+  options:
+  - id: a
+    text: "`ref`, with the field `name` set to the `StepAction`."
+    explanation: "Correct. A step with `ref.name` runs the `StepAction`."
+  - id: b
+    text: "`taskRef`, as in a `TaskRun`."
+    explanation: "Not correct. `taskRef` belongs to a `TaskRun` or a Pipeline task."
+  - id: c
+    text: "`uses`, followed by the name."
+    explanation: "Not correct. Tekton has no `uses` field in a step."
+  - id: d
+    text: "`image`, set to the name of the `StepAction`."
+    explanation: "Not correct. `image` names a container image."
+  correct_option: a
+  explanation: "Correct. A step with `ref.name` runs the `StepAction`."
+- id: ats125-010-02-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Know when a missing StepAction is found"
+  source_readings:
+  - sections/section-010/module-02/course-01-write-a-stepaction-and-use-it-with-ref.md
+  prompt: "A Task refers to a `StepAction` that does not exist. When does Tekton report it?"
+  options:
+  - id: a
+    text: "When you apply the Task, because the webhook checks the name."
+    explanation: "Not correct. The webhook checks the shape of the Task, not whether the `StepAction` exists."
+  - id: b
+    text: "When the `TaskRun` starts and the controller looks for the `StepAction`."
+    explanation: "Correct. The controller resolves the `StepAction` when the run starts, so a wrong name fails the run."
+  - id: c
+    text: "Never. The step is skipped."
+    explanation: "Not correct. The run fails."
+  - id: d
+    text: "Only after the first step has finished."
+    explanation: "Not correct. The lookup happens before the pod is created."
+  correct_option: b
+  explanation: "Correct. The controller resolves the `StepAction` when the run starts, so a wrong name fails the run."
+- id: ats125-010-02-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Know that ref and image exclude each other"
+  source_readings:
+  - sections/section-010/module-02/course-01-write-a-stepaction-and-use-it-with-ref.md
+  prompt: "A step sets `ref` and also `image`. What happens when you apply the Task?"
+  options:
+  - id: a
+    text: "The `image` wins and `ref` is ignored."
+    explanation: "Not correct. Neither field is ignored; the webhook rejects the step."
+  - id: b
+    text: "The `ref` wins and `image` is ignored."
+    explanation: "Not correct. The webhook does not pick one."
+  - id: c
+    text: "The webhook rejects the Task."
+    explanation: "Correct. A step with `ref` cannot also set `image`."
+  - id: d
+    text: "Both run, one after the other."
+    explanation: "Not correct. A step runs one container."
+  correct_option: c
+  explanation: "Correct. A step with `ref` cannot also set `image`."
+- id: ats125-010-02-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know that a started run keeps its resolved step"
+  source_readings:
+  - sections/section-010/module-02/course-01-write-a-stepaction-and-use-it-with-ref.md
+  prompt: "A `TaskRun` has started and resolved its `StepAction`. You then change the `StepAction`. What happens to that run?"
+  options:
+  - id: a
+    text: "It restarts with the new version."
+    explanation: "Not correct. A started run is not restarted."
+  - id: b
+    text: "It fails with an error about a changed object."
+    explanation: "Not correct. The change does not affect the running pod."
+  - id: c
+    text: "The step already running is replaced."
+    explanation: "Not correct. A pod does not change after it starts."
+  - id: d
+    text: "It keeps the step it resolved and is not changed."
+    explanation: "Correct. A new `TaskRun` uses the changed `StepAction`; the old one keeps what it resolved."
+  correct_option: d
+  explanation: "Correct. A new `TaskRun` uses the changed `StepAction`; the old one keeps what it resolved."
+- id: ats125-010-02-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Know what a missing required parameter does"
+  source_readings:
+  - sections/section-010/module-02/course-02-pass-parameters-to-a-stepaction.md
+  prompt: "A `StepAction` has a parameter without a default. The step does not pass a value. What happens?"
+  options:
+  - id: a
+    text: "The run fails before it starts."
+    explanation: "Correct. A parameter without a default and without a value stops the run before it starts."
+  - id: b
+    text: "The parameter is an empty string."
+    explanation: "Not correct. Only a parameter with a default gets a value on its own."
+  - id: c
+    text: "The step runs and prints a warning."
+    explanation: "Not correct. The run does not start."
+  - id: d
+    text: "Tekton asks for the value while the step runs."
+    explanation: "Not correct. A run never waits for input."
+  correct_option: a
+  explanation: "Correct. A parameter without a default and without a value stops the run before it starts."
+- id: ats125-010-02-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Pass parameters to a script safely"
+  source_readings:
+  - sections/section-010/module-02/course-02-pass-parameters-to-a-stepaction.md
+  prompt: "What is the safe way to use a `StepAction` parameter inside its script?"
+  options:
+  - id: a
+    text: "Write `$(params.name)` inside the script text."
+    explanation: "Not correct. The value is pasted into the script, so a special character can change the script."
+  - id: b
+    text: "Put it in an environment variable declared in the `StepAction` and read the variable in the script."
+    explanation: "Correct. An environment variable keeps the value out of the script text."
+  - id: c
+    text: "Copy the value into a file with `echo` in a previous step."
+    explanation: "Not correct. This is not needed and can lose characters."
+  - id: d
+    text: "Pass it as the `image` of the step."
+    explanation: "Not correct. The image is the container image."
+  correct_option: b
+  explanation: "Correct. An environment variable keeps the value out of the script text."
+- id: ats125-010-02-q07
+  type: single_choice
+  difficulty: beginner
+  learning_objective: "Write a step result"
+  source_readings:
+  - sections/section-010/module-02/course-03-return-results-from-a-stepaction.md
+  prompt: "Which variable gives the file where a `StepAction` writes the result `size`?"
+  options:
+  - id: a
+    text: "`$(results.size.path)`"
+    explanation: "Not correct. That variable is for a Task result."
+  - id: b
+    text: "`$(steps.size.path)`"
+    explanation: "Not correct. That is not a variable."
+  - id: c
+    text: "`$(step.results.size.path)`"
+    explanation: "Correct. `$(step.results.<name>.path)` is the file of a step result."
+  - id: d
+    text: "`$(params.size.path)`"
+    explanation: "Not correct. Parameters have no `path`."
+  correct_option: c
+  explanation: "Correct. `$(step.results.<name>.path)` is the file of a step result."
+- id: ats125-010-02-q08
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Read a result in a later step"
+  source_readings:
+  - sections/section-010/module-02/course-03-return-results-from-a-stepaction.md
+  prompt: "A step named `measure` wrote the step result `size`. How does a later step read it in `env`?"
+  options:
+  - id: a
+    text: "`$(step.results.size.path)`"
+    explanation: "Not correct. That is the file path in the step that writes it."
+  - id: b
+    text: "`$(results.measure.size)`"
+    explanation: "Not correct. That form does not exist."
+  - id: c
+    text: "`$(tasks.measure.results.size)`"
+    explanation: "Not correct. `tasks` is for Pipelines."
+  - id: d
+    text: "`$(steps.measure.results.size)`"
+    explanation: "Correct. Later steps read a result with `$(steps.<step>.results.<name>)`."
+  correct_option: d
+  explanation: "Correct. Later steps read a result with `$(steps.<step>.results.<name>)`."
+- id: ats125-010-02-q09
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: "Know which fields a ref step can set"
+  source_readings:
+  - sections/section-010/module-02/course-04-which-fields-a-ref-step-can-set.md
+  prompt: "Which of these fields can a step with `ref` set?"
+  options:
+  - id: a
+    text: "`timeout`"
+    explanation: "Correct. A ref step can set `params`, `timeout`, `onError` and `computeResources`."
+  - id: b
+    text: "`script`"
+    explanation: "Not correct. A step with `ref` takes the script from the `StepAction`."
+  - id: c
+    text: "`image`"
+    explanation: "Not correct. The image comes from the `StepAction`."
+  - id: d
+    text: "`env`"
+    explanation: "Not correct. The webhook rejects `env` on a ref step."
+  correct_option: a
+  explanation: "Correct. A ref step can set `params`, `timeout`, `onError` and `computeResources`."
+- id: ats125-010-02-q10
+  type: single_choice
+  difficulty: advanced
+  learning_objective: "Fetch a StepAction with a resolver"
+  source_readings:
+  - sections/section-010/module-02/course-04-which-fields-a-ref-step-can-set.md
+  prompt: "A `StepAction` is stored in a Git repository. How does a step use it?"
+  options:
+  - id: a
+    text: "`ref.name` with the URL of the repository."
+    explanation: "Not correct. `name` is for an object in the namespace."
+  - id: b
+    text: "`ref` with `resolver: git` and the params `url`, `revision` and `pathInRepo`."
+    explanation: "Correct. A resolver fetches the `StepAction` from Git when the run starts."
+  - id: c
+    text: "`image` set to the URL of the repository."
+    explanation: "Not correct. `image` is a container image."
+  - id: d
+    text: "A `taskRef` with the URL."
+    explanation: "Not correct. `taskRef` is for a Task."
+  correct_option: b
+  explanation: "Correct. A resolver fetches the `StepAction` from Git when the run starts."

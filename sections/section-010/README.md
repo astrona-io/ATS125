@@ -2,7 +2,7 @@
 
 Every piece of work in Tekton is described by a `Task`. Builds, tests, scans and deployments are all lists of steps with inputs and outputs. Before you can share files between steps, build images or handle failures, you must be able to read and write the `Task` itself: what each step runs, which values it gets, and what it hands back.
 
-This section teaches that anatomy. You first take a step apart: its image, `command` and `args` or `script`, its environment and working directory, and the `stepTemplate` that sets values for every step. Then you pass parameters of the types `string`, `array` and `object` into a `Task`. Last, you write Task results and step results, and learn the limits that come with them.
+This section teaches that anatomy. You first take a step apart: its image, `command` and `args` or `script`, its environment and working directory, and the `stepTemplate` that sets values for every step. Then you pass parameters of the types `string`, `array` and `object` into a `Task`. Then you write Task results and step results, and learn the limits that come with them. Two more modules reuse steps with `StepAction` objects, and add object parameters, array and object results and context variables.
 
 **Topic covered:** Task anatomy
 
@@ -14,10 +14,12 @@ This section teaches that anatomy. You first take a step apart: its image, `comm
 - `StepAction` objects, used from a step with `ref`.
 - Parameter types `string`, `array` and `object`, defaults, and where each type may appear.
 - Task results, their 4096-byte limit, and step results passed from one step to a later one.
+- Writing a `StepAction` with parameters and results, and the fields a step with `ref` can set.
+- Object parameters, array and object results, context variables and array indexing.
 
 ## The learning path
 
-The section has one module. It has a landing page, three short parts, a graded lab right after the part it tests, and a summary. The module also has its own playground, a cluster where you can explore freely, and the landing page starts it for you.
+The section has three modules. Each has a landing page, short parts, a graded lab right after the part it tests, and a summary. Each module also has its own playground, a cluster where you can explore freely, and the landing page starts it for you.
 
 ### 1. Write A Task From Steps, Parameters And Results
 
@@ -28,9 +30,29 @@ The module starts at its landing page, which also launches the playground. The p
 3. Results From Tasks And From Steps, followed by the lab **Repair A Task's Parameters, Environment And Results**
 4. Summary
 
+### 2. Reuse Steps With StepActions
+
+The playground has the same tools and an empty namespace `starfleet`.
+
+1. Write A StepAction And Use It With ref
+2. Pass Parameters To A StepAction
+3. Return Results From A StepAction
+4. Which Fields A ref Step Can Set, followed by the lab **Write A Task From A StepAction**
+5. Summary
+
+### 3. Object Parameters, Array Results And Context Variables
+
+The playground has the same tools and an empty namespace `starfleet`.
+
+1. Object Parameters And Their Properties
+2. Array And Object Results
+3. Context Variables And Array Indexing
+4. Defaults, Required Parameters And Starting A Task With tkn, followed by the lab **Write A Task With An Object Parameter And Array Results**
+5. Summary
+
 ## Section capstone: Repair A Task Built From Steps, Parameters And Results
 
-The capstone is one graded scenario that combines the whole module. The `crew-manifest` Task of the `starfleet` team has never worked: one step cannot start because it reads a Secret key that does not exist, another uses a shell the image does not have, and the `stepTemplate` ignores a parameter. Find each fault from the TaskRun status, the pod and the step logs, fix the Task, and prove the fix with a TaskRun that reports the right results. Work it after the module lab.
+The capstone is one graded scenario that combines the first module. The `crew-manifest` Task of the `starfleet` team has never worked: one step cannot start because it reads a Secret key that does not exist, another uses a shell the image does not have, and the `stepTemplate` ignores a parameter. Find each fault from the TaskRun status, the pod and the step logs, fix the Task, and prove the fix with a TaskRun that reports the right results. Work it after the module lab.
 
 Start the capstone:
 

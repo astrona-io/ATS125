@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: ship-card
+  namespace: starfleet
+spec:
+  params:
+    - name: ship
+      type: object
+      properties:
+        name:
+          type: string
+        class:
+          type: string
+  results:
+    - name: card
+      type: string
+    - name: tags
+      type: array
+    - name: run-name
+      type: string
+  steps:
+    - name: build
+      image: busybox:1.37.0
+      env:
+        - name: SHIP_NAME
+          value: $(params.ship.name)
+        - name: SHIP_CLASS
+          value: $(params.ship.class)
+        - name: RUN_NAME
+          value: $(context.taskRun.name)
+      script: |
+        #!/bin/sh
+        set -eu
+        printf '%s/%s' "$SHIP_NAME" "$SHIP_CLASS" > "$(results.card.path)"
+        printf '["%s","%s"]' "$SHIP_NAME" "$SHIP_CLASS" > "$(results.tags.path)"
+        printf '%s' "$RUN_NAME" > "$(results.run-name.path)"

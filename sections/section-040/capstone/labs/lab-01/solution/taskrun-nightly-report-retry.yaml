@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: nightly-report-retry
+  namespace: starfleet
+spec:
+  taskRef:
+    name: nightly-report
+  params:
+    - name: flaky
+      value: "true"
+  retries: 1
+  timeout: 3m
+  stepSpecs:
+    - name: publish
+      computeResources:
+        limits:
+          memory: 64Mi
