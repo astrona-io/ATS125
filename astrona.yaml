@@ -13,7 +13,7 @@
 training:
   id: ATS125
   title: "Tekton: Tasks, Steps & Workspaces"
-  maturity: draft
+  maturity: alpha
   description: >
     Training material covering the Tasks, Steps & Workspaces domain of the
     Tekton training path: the anatomy of a Task (steps with command, args or

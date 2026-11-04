@@ -3,7 +3,7 @@ kind: question_bank
 id: ats125-final
 course_id: ATS125
 exam_code: TEKTON
-status: draft
+status: alpha
 provenance: Original practice material written for this course; not official exam questions.
 scope:
   type: domain
