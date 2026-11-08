@@ -1,12 +1,13 @@
 # Course manifest for ATS125 - Tasks, Steps & Workspaces (Tekton).
 #
-# One entry per section under `modules:`. Each section lists, in order: its
-# README, then for each module the landing page (course.md), its parts
-# (course-0N-*.md), and right after the part a lab tests, the lab's
-# question.md reading and the `type: lab` entry. The module's summary page
-# comes last. The section capstone closes the section. Playgrounds are not
-# listed: the landing page's playground marker shows them. solution.md is
-# never listed.
+# One entry per module under `modules:`, in section order. A module lists,
+# in order: the section README when it opens a section, its landing page
+# (course.md), its parts (course-0N-*.md), and right after the part a lab
+# tests, the lab's question.md reading and the `type: lab` entry. The
+# module's summary page and knowledge check come last. The last module of a
+# section also carries the section capstone and the section knowledge check.
+# Playgrounds are not listed: the playground marker on the landing page shows
+# them. solution.md is never listed.
 #
 # Every `path:` is relative to this file.
 
@@ -60,14 +61,14 @@ modules:
         title: "How This Course Is Made"
         path: sections/intro/course-03-how-this-course-is-made.md
 
-  - id: module-010
-    title: "Write Tasks With Steps, Parameters And Results"
+  - id: module-010-01
+    title: "Write A Task From Steps, Parameters And Results"
     description: >
-      The anatomy of a Task: steps with command and args or script, the
-      entrypoint binary, env, envFrom, workingDir, computeResources and the
-      stepTemplate, StepActions, string, array and object parameters with
-      defaults and safe substitution, object parameters, Task results, array
-      and object results, step results and context variables.
+      Module 1 of 3 in Write Tasks With Steps, Parameters And Results. Parts:
+      Steps: Image, Command, Script And Environment; Parameters: Types,
+      Defaults And Safe Substitution; Results From Tasks And From Steps.
+      Graded lab: Repair A Task's Parameters, Environment And Results. Opens
+      with the section overview.
 
     content:
       - type: reading
@@ -112,6 +113,15 @@ modules:
         title: Summary
         path: sections/section-010/module-01/course-04-summary.md
 
+  - id: module-010-02
+    title: "Reuse Steps With StepActions"
+    description: >
+      Module 2 of 3 in Write Tasks With Steps, Parameters And Results. Parts:
+      Write A StepAction And Use It With ref; Pass Parameters To A StepAction;
+      Return Results From A StepAction; Which Fields A ref Step Can Set.
+      Graded lab: Write A Task From A StepAction. Ends with a knowledge check.
+
+    content:
       - type: reading
         title: "Reuse Steps With StepActions"
         path: sections/section-010/module-02/course.md
@@ -158,6 +168,17 @@ modules:
         question_count: 10
         pass_score: 70
 
+  - id: module-010-03
+    title: "Object Parameters, Array Results And Context Variables"
+    description: >
+      Module 3 of 3 in Write Tasks With Steps, Parameters And Results. Parts:
+      Object Parameters And Their Properties; Array And Object Results;
+      Context Variables And Array Indexing; Defaults, Required Parameters And
+      Starting A Task With tkn. Graded lab: Write A Task With An Object
+      Parameter And Array Results. Ends with a knowledge check. Closes the
+      section with its capstone lab and section knowledge check.
+
+    content:
       - type: reading
         title: "Object Parameters, Array Results And Context Variables"
         path: sections/section-010/module-03/course.md
@@ -231,14 +252,13 @@ modules:
         path: sections/section-010/quiz.yaml
         pass_score: 70
 
-  - id: module-020
-    title: "Share Data With Workspaces"
+  - id: module-020-01
+    title: "Share Files With Workspaces"
     description: >
-      Workspaces: declarations with mountPath, readOnly and optional, the
-      workspace variables, emptyDir, ConfigMap, Secret, PersistentVolumeClaim
-      and volumeClaimTemplate bindings, subPath, isolated workspaces, and the
-      one-PersistentVolumeClaim rule of the default coschedule setting, Task
-      volumes and sidecars.
+      Module 1 of 2 in Share Data With Workspaces. Parts: Declare Workspaces
+      And Bind An emptyDir; ConfigMap And Secret Workspaces; Persistent
+      Workspaces With PersistentVolumeClaims. Graded lab: Bind Workspaces To A
+      TaskRun. Opens with the section overview.
 
     content:
       - type: reading
@@ -281,6 +301,16 @@ modules:
         title: Summary
         path: sections/section-020/module-01/course-04-summary.md
 
+  - id: module-020-02
+    title: "Task Volumes And Sidecars"
+    description: >
+      Module 2 of 2 in Share Data With Workspaces. Parts: Task Volumes And
+      volumeMounts; Workspaces Compared With Volumes; Sidecars In A Task;
+      Sidecar Lifecycle And Readiness. Graded lab: Write A Task With A Sidecar
+      And A Shared Volume. Ends with a knowledge check. Closes the section
+      with its capstone lab and section knowledge check.
+
+    content:
       - type: reading
         title: "Task Volumes And Sidecars"
         path: sections/section-020/module-02/course.md
@@ -352,14 +382,15 @@ modules:
         path: sections/section-020/quiz.yaml
         pass_score: 70
 
-  - id: module-030
-    title: "Step Lifecycle And A Container Build Task"
+  - id: module-030-01
+    title: "Control Step Failures And Build An Image"
     description: >
-      The TaskRun lifecycle and the Succeeded condition, step termination
-      reasons, step and run timeouts, onError and step exit codes as the exit
-      handler of a Task, and a Buildah Task that builds an image from a
-      workspace, pushes it to a registry and reports IMAGE_DIGEST and
-      IMAGE_URL.
+      Module 1 of 1 in Step Lifecycle And A Container Build Task. Parts: The
+      TaskRun Lifecycle And Step Termination States; Handle Step Failures With
+      onError And Exit Codes; Build And Push An Image From A Workspace. Graded
+      lab: Write A Build Task That Pushes To A Registry. Opens with the
+      section overview. Closes the section with its capstone lab and section
+      knowledge check.
 
     content:
       - type: reading
@@ -430,14 +461,14 @@ modules:
         title: "Knowledge Check: Step Lifecycle And A Container Build Task"
         path: sections/section-030/quiz.yaml
         pass_score: 70
-  - id: module-040
-    title: "Run And Debug Tasks"
+  - id: module-040-01
+    title: "Control How A TaskRun Runs"
     description: >
-      The settings of a TaskRun: timeout and step timeout, retries and the
-      retry count, cancel and pending runs, stepSpecs, serviceAccountName and
-      podTemplate. Starting, listing and describing runs with tkn, reading
-      logs per step, reading status and termination reasons, and the usual
-      causes of a failing Task.
+      Module 1 of 2 in Run And Debug Tasks. Parts: Timeouts For A TaskRun And
+      For A Step; Retries And The Retry Count; Cancel And Pending Runs;
+      Resources, Service Account And Pod Settings. Graded lab: Fix A Failing
+      TaskRun With Timeout And Retries. Ends with a knowledge check. Opens
+      with the section overview.
 
     content:
       - type: reading
@@ -488,6 +519,16 @@ modules:
         question_count: 10
         pass_score: 70
 
+  - id: module-040-02
+    title: "Run And Debug Tasks With tkn"
+    description: >
+      Module 2 of 2 in Run And Debug Tasks. Parts: Start And Describe With
+      tkn; Logs And Cleanup; Reading Status And Termination Reasons; Debugging
+      Patterns. Graded lab: Diagnose A Failing Archive Task. Ends with a
+      knowledge check. Closes the section with its capstone lab and section
+      knowledge check.
+
+    content:
       - type: reading
         title: "Run And Debug Tasks With tkn"
         path: sections/section-040/module-02/course.md
